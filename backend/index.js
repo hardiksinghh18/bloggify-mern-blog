@@ -29,6 +29,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(cors({
     origin: ['https://bloggify-mern.vercel.app'],
+ methods:["POST","GET"],
     credentials: true
 
 }))
