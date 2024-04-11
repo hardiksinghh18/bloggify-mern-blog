@@ -28,7 +28,7 @@ app.use('/uploads', express.static('uploads'))
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(cors({
-    origin: ['http://localhost:3000'],
+    origin: ['https://bloggify-mern.vercel.app/'],
     credentials: true
 
 }))
