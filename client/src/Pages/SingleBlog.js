@@ -36,7 +36,7 @@ const SingleBlog = () => {
   }
 
 
-  const profileImageUrl = singleBlogDetail[0]?.author?.profileImage ? `http://localhost:4000/${singleBlogDetail[0]?.author?.profileImage}` : defaultProfile
+  const profileImageUrl = singleBlogDetail[0]?.author?.profileImage ? `https://bloggify-jet.vercel.app/${singleBlogDetail[0]?.author?.profileImage}` : defaultProfile
 
   const date = new Date(singleBlogDetail[0]?.createdAt)
   const formattedDate = date.toDateString();
@@ -44,7 +44,7 @@ const SingleBlog = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get('http://localhost:4000/singleblog')
+      const res = await axios.get('https://bloggify-jet.vercel.app/singleblog')
 
       if (res?.data?.valid) {
         setIsAuthenticated(res?.data?.valid)
@@ -58,7 +58,7 @@ const SingleBlog = () => {
   }
 
   const increaseViewCount = async () => {
-    const res = await axios.post('http://localhost:4000/views', { id })
+    const res = await axios.post('https://bloggify-jet.vercel.app/views', { id })
   }
   useEffect(() => {
 
@@ -118,7 +118,7 @@ if(loading){
             <div className='blogContent '>
 
               <div className='h-96 overflow-hidden ' >
-                <img className='w-full h-full object-cover ' src={`http://localhost:4000/${singleBlogDetail[0]?.coverImage}`} alt="" />
+                <img className='w-full h-full object-cover ' src={`https://bloggify-jet.vercel.app/${singleBlogDetail[0]?.coverImage}`} alt="" />
               </div>
               <div>
                 <p className=' mt-8 text-sm'><i>Summary : {singleBlogDetail[0]?.summary}</i></p>

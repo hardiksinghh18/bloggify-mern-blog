@@ -17,7 +17,7 @@ const Home = () => {
   const fetchData = async () => {
 
     try {
-      const res = await axios.get('http://localhost:4000/dashboard')
+      const res = await axios.get('https://bloggify-jet.vercel.app/dashboard')
       if (res?.data?.valid) {
         // setUserDetails(res?.data?.user)
         setBlogsData(res?.data?.allBlogs)

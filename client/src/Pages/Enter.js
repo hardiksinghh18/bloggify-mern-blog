@@ -30,7 +30,7 @@ const Enter = () => {
         e.preventDefault();
 
         try {
-            const res = await axios.post('http://localhost:4000/register', {
+            const res = await axios.post('https://bloggify-jet.vercel.app/register', {
                 name, email, password
 
             })
@@ -56,7 +56,7 @@ const Enter = () => {
         e.preventDefault();
 
         try {
-            const res = await axios.post('http://localhost:4000/login', {
+            const res = await axios.post('https://bloggify-jet.vercel.app/login', {
                 email, password
             })
 

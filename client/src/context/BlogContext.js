@@ -9,7 +9,7 @@ const BlogProvider = ({ children }) => {
 
     const fetchBlogData = async () => {
         try {
-            const res = await axios.get('http://localhost:4000/dashboard')
+            const res = await axios.get('https://bloggify-jet.vercel.app/dashboard')
      
             setIsAuthenticated(res?.data?.valid)
             setBlogsData(res?.data?.allBlogs)

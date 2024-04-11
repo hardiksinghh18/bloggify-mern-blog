@@ -16,7 +16,7 @@ const BlogLayoutfour = (props) => {
         const confirm = window.confirm('Delete this Blog permanently ?')
         if (confirm) {
 
-            const res = axios.post('http://localhost:4000/deleteblog', { blogId })
+            const res = axios.post('https://bloggify-jet.vercel.app/deleteblog', { blogId })
             toast.success('Blog deleted successfully')
         }
         setTimeout(() => {
@@ -36,7 +36,7 @@ const BlogLayoutfour = (props) => {
                     className=" col-span-12  lg:col-span-4 h-full rounded-xl overflow-hidden"
                 >
 
-                    <img className=" aspect-square h-10 w-16 sm:h-16 sm:w-20 object-cover object-center group-hover:scale-105 transition-all ease duration-300" src={`http://localhost:4000/${blog?.coverImage}`} alt="" />
+                    <img className=" aspect-square h-10 w-16 sm:h-16 sm:w-20 object-cover object-center group-hover:scale-105 transition-all ease duration-300" src={`https://bloggify-jet.vercel.app/${blog?.coverImage}`} alt="" />
 
 
                 </a>

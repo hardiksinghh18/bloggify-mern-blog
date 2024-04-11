@@ -21,7 +21,7 @@ const Navbar = () => {
   const handleLogout = () => {
     const confirmLogout = window.confirm('Are you sure you want to log out?');
     if (confirmLogout) {
-      axios.get('http://localhost:4000/logout')
+      axios.get('https://bloggify-jet.vercel.app/logout')
 
         .then(res => {
           if (!res.data.valid) {
@@ -45,7 +45,7 @@ const Navbar = () => {
   }
 
 
-  const profileImage = userInfo?.profileImage ? `http://localhost:4000/${userInfo?.profileImage}` : defaultProfile
+  const profileImage = userInfo?.profileImage ? `https://bloggify-jet.vercel.app/${userInfo?.profileImage}` : defaultProfile
 
   return (
 

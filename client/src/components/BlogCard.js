@@ -5,7 +5,7 @@ const BlogCard = ({ blog }) => {
     return (
         <>
             <div className="bg-white rounded-lg overflow-hidden  shadow-lg my-4 ">
-                <img src={`http://localhost:4000/${coverImage}`} alt="Blog Cover Image" className="w-3/6" />
+                <img src={`https://bloggify-jet.vercel.app/${coverImage}`} alt="Blog Cover Image" className="w-3/6" />
                 <div className="px-6 py-4 ">
                     <div className="font-bold text-xl mb-2">{title}</div>
                     <p className="text-gray-700 text-base">

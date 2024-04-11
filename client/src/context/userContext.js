@@ -9,7 +9,7 @@ const AuthProvider = ({ children }) => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get('http://localhost:4000/dashboard')
+      const res = await axios.get('https://bloggify-jet.vercel.app/dashboard')
       if (res.data) {
         setUserInfo(res?.data?.user)
         setIsAuthenticated(res?.data?.valid)

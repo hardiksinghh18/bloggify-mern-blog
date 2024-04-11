@@ -26,7 +26,7 @@ const UserProfile = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   const profileImageUrl = userProfile?.profileImage
-    ? `http://localhost:4000/${userProfile?.profileImage}`
+    ? `https://bloggify-jet.vercel.app/${userProfile?.profileImage}`
     : defaultProfile;
 
   const toggleModal = () => {
@@ -63,7 +63,7 @@ const UserProfile = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:4000/updatebio', newData)
+      const response = await axios.post('https://bloggify-jet.vercel.app/updatebio', newData)
       setEditable(false)
       toast.success('Profile updated successfully !')
       setSaved(!saved)
@@ -75,7 +75,7 @@ const UserProfile = () => {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get('http://localhost:4000/profile')
+      const res = await axios.get('https://bloggify-jet.vercel.app/profile')
 
       if (res?.data?.valid) {
         setIsAuthenticated(res?.data?.valid)
@@ -93,7 +93,7 @@ const UserProfile = () => {
   const fetchUserDetails = async () => {
 
     try {
-      const userData = await axios.post("http://localhost:4000/profile", userId)
+      const userData = await axios.post("https://bloggify-jet.vercel.app/profile", userId)
       setUserProfile(userData?.data);
       setNewName(userData?.data?.name);
       setNewBio(userData?.data?.bio);

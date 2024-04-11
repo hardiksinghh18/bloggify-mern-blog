@@ -10,7 +10,7 @@ const BlogLayoutThree = ({ blog }) => {
  
             <a href={`blogs/${blog?._id}/${blog?.title}`}>
             <div className=' flex items-center justify-center w-72 h-48 relative'  >
-                <img className="w-full h-full object-center object-cover rounded-lg group-hover:scale-105 transition-all ease duration-300" src={`http://localhost:4000/${blog?.coverImage}`} alt="" />
+                <img className="w-full h-full object-center object-cover rounded-lg group-hover:scale-105 transition-all ease duration-300" src={`https://bloggify-jet.vercel.app/${blog?.coverImage}`} alt="" />
             </div>
                 </a>
             <div className='justify-start w-full px-2 py-1'>

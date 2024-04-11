@@ -25,7 +25,7 @@ const CreatePost = () => {
   const fetchData = async () => {
 
     try {
-      const res = await axios.get('http://localhost:4000/newpost')
+      const res = await axios.get('https://bloggify-jet.vercel.app/newpost')
 
       if (res?.data?.valid) {
 
@@ -70,7 +70,7 @@ const CreatePost = () => {
     formData.append('content', content);
     // console.log(file)
     try {
-      const res = await axios.post('http://localhost:4000/newpost', formData)
+      const res = await axios.post('https://bloggify-jet.vercel.app/newpost', formData)
        if(res?.data?.valid){
         toast.success('Posted new Blog successfully.')
        }else{

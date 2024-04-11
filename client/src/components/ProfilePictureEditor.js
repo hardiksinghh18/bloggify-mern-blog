@@ -21,7 +21,7 @@ const ProfilePictureEditor = (props) => {
         const blob = await new Promise(resolve => canvas.toBlob(resolve));
         const formData = new FormData();
         formData.append('profilePicture', blob);
-        const response = await axios.post('http://localhost:4000/profileimage', formData, {
+        const response = await axios.post('https://bloggify-jet.vercel.app/profileimage', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }

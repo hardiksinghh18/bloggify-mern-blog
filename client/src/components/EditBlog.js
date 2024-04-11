@@ -17,7 +17,7 @@ const EditBlog = ({ singleBlog, editable,setEditable, handleEdit }) => {
             }
 
             try {
-                const res = await axios.post("http://localhost:4000/editblog", updatedData)
+                const res = await axios.post("https://bloggify-jet.vercel.app/editblog", updatedData)
 
               
               toast.success('Blog updated successfully !')

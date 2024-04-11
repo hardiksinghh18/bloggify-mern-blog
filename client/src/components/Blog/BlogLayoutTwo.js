@@ -12,7 +12,7 @@ const BlogLayoutTwo = ({ blog }) => {
                     href={`blogs/${blog?._id}/${blog?.title}`}
                     className=" col-span-12  lg:col-span-4 h-full rounded-xl overflow-hidden"
                 >
-                    <img className=" aspect-square h-18 w-24 sm:h-28 sm:w-40 object-cover object-center group-hover:scale-105 transition-all ease duration-300" src={`http://localhost:4000/${blog?.coverImage}`} alt="" />
+                    <img className=" aspect-square h-18 w-24 sm:h-28 sm:w-40 object-cover object-center group-hover:scale-105 transition-all ease duration-300" src={`https://bloggify-jet.vercel.app/${blog?.coverImage}`} alt="" />
                 </a>
 
                 <div className="col-span-12  lg:col-span-8 w-full  ">

@@ -11,7 +11,7 @@ const CommentSection = ({ singleBlogId }) => {
     const [load, setLoad] = useState(true)
 
     const getComments = async () => {
-        const comments = await axios.get('http://localhost:4000/comment')
+        const comments = await axios.get('https://bloggify-jet.vercel.app/comment')
 
         setAllComments(comments?.data);
     }
@@ -32,7 +32,7 @@ const CommentSection = ({ singleBlogId }) => {
         if (newComment.trim() === '') return;
 
         try {
-            const res = await axios.post('http://localhost:4000/comment', { newComment, singleBlogId })
+            const res = await axios.post('https://bloggify-jet.vercel.app/comment', { newComment, singleBlogId })
             toast.success('Comment added successfully.')
 
             setNewComment('');
@@ -46,7 +46,7 @@ const CommentSection = ({ singleBlogId }) => {
 
     const deleteComment = async (deleteCommentId) => {
         try {
-            const res = await axios.post('http://localhost:4000/deletecomment', { deleteCommentId })
+            const res = await axios.post('https://bloggify-jet.vercel.app/deletecomment', { deleteCommentId })
             toast.success('Comment deleted successfully.')
             setLoad(!load)
         } catch (error) {
@@ -84,7 +84,7 @@ const CommentSection = ({ singleBlogId }) => {
                             <a href={`/profile/${comment?.userId?._id}/${comment?.userId?.name}`} className='flex items-start justify-center pt-3'>
                                 <img
 
-                                    src={comment?.userId?.profileImage ? `http://localhost:4000/${comment?.userId?.profileImage}` : defaultProfile}
+                                    src={comment?.userId?.profileImage ? `https://bloggify-jet.vercel.app/${comment?.userId?.profileImage}` : defaultProfile}
                                     alt="Profile"
                                     className="h-8 w-8 mr-4 rounded-full  "
                                 />

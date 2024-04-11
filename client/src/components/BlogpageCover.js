@@ -5,7 +5,7 @@ const BlogpageCover = ({blog}) => {
     <div className="coverSection relative   flex flex-col justify-center items-center">
 
         <div className=' relative h-64 rounded-lg overflow-hidden '>
-          <img className='rounded-lg w-screen object-center object-cover' src={`http://localhost:4000/${blog?.coverImage}`} alt="" />
+          <img className='rounded-lg w-screen object-center object-cover' src={`https://bloggify-jet.vercel.app/${blog?.coverImage}`} alt="" />
 
         </div>
         <div className=' bg-gradient-to-t from-black to-transparent opacity-90 h-64  w-full rounded-lg   absolute  '></div>
