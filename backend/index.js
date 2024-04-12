@@ -20,8 +20,6 @@ const PORT = process.env.PORT || 5000
 const cookieParser = require('cookie-parser')
 const { timeStamp } = require('console')
 
-// const ACCESS_TOKEN_KEY = 'jwt-access-token-secret-key'
-// const REFRESH_TOKEN_KEY = 'jwt-refresh-token-secret-key'
 
 app.use(express.json())
 app.use('/uploads', express.static('uploads'))
