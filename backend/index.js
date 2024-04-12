@@ -34,7 +34,7 @@ app.use(cors({
 
 }))
 app.get('/', (req, res) => {
-    res.send('hello')
+    res.json('hello')
 })
 
 app.get('/message', (req, res) => {
@@ -43,7 +43,7 @@ app.get('/message', (req, res) => {
 })
 
 app.get('/register', (req, res) => {
-    res.send('register page')
+    res.json('register page')
 })
 
 app.post('/register', async (req, res) => {
