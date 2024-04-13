@@ -21,21 +21,24 @@ const PORT = process.env.PORT || 5000
 const cookieParser = require('cookie-parser')
 const { timeStamp } = require('console')
 
-// const ACCESS_TOKEN_KEY = 'jwt-access-token-secret-key'
-// const REFRESH_TOKEN_KEY = 'jwt-refresh-token-secret-key'
 
 app.use(express.json())
 app.use('/uploads', express.static('uploads'))
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(cors({
+
     // origin: ['http://localhost:3000'],
     origin: ['https://bloggify-mern.vercel.app'],
+
+    origin: 'https://bloggify-mern.vercel.app',
+ methods:["POST","GET"],
+
     credentials: true
 
 }))
 app.get('/', (req, res) => {
-    res.send('hello')
+    res.json('hello')
 })
 
 app.get('/message', (req, res) => {
@@ -44,7 +47,7 @@ app.get('/message', (req, res) => {
 })
 
 app.get('/register', (req, res) => {
-    res.send('register page')
+    res.json('register page')
 })
 
 app.post('/register', async (req, res) => {
