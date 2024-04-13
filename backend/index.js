@@ -2,6 +2,7 @@
 const express = require('express')
 const multer = require('multer')
 const upload = multer({ dest: 'uploads/' })
+const uploadImageOnCloud=require('./utils/cloudinary')
 const cors = require('cors')
 const fs = require('fs')
 const mongoose = require('mongoose')
@@ -28,6 +29,7 @@ app.use('/uploads', express.static('uploads'))
 app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 app.use(cors({
+    // origin: ['http://localhost:3000'],
     origin: ['https://bloggify-mern.vercel.app'],
     credentials: true
 
@@ -153,13 +155,18 @@ app.post('/newpost', verifyuser, upload.single('file'), async (req, res) => {
         const newPath = path + '.' + fileType;
 
         fs.renameSync(path, newPath)
+        
+        //call the uploadImageOnCloud function
+
+       const response=await uploadImageOnCloud(newPath)
+       // console.log("file uploaded",response.url)
 
 
         await Blog.create({
             title: title,
             summary: summary,
             content: content,
-            coverImage: newPath,
+            coverImage: response.url,
             author: userId
         })
 
@@ -278,9 +285,14 @@ app.post('/profileimage', verifyuser, upload.single('profilePicture'), async (re
 
     fs.renameSync(path, newPath)
 
-    const findUser = await Register.findOneAndUpdate({ email: userEmail }, { $set: { profileImage: newPath } })
+    //call the uploadImageOnCloud function
+
+    const response=await uploadImageOnCloud(newPath)
+    // console.log("file uploaded",response.url)
+
+    const findUser = await Register.findOneAndUpdate({ email: userEmail }, { $set: { profileImage: response.url } })
   
-    return res.json({ profileUrl: newPath })
+    return res.json({ profileUrl: response.url })
 })
 
 

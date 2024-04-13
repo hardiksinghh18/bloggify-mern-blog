@@ -45,7 +45,7 @@ const Navbar = () => {
   }
 
 
-  const profileImage = userInfo?.profileImage ? `https://bloggify-jet.vercel.app/${userInfo?.profileImage}` : defaultProfile
+  const profileImage = userInfo?.profileImage ? userInfo?.profileImage : defaultProfile
 
   return (
 

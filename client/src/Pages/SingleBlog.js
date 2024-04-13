@@ -36,7 +36,7 @@ const SingleBlog = () => {
   }
 
 
-  const profileImageUrl = singleBlogDetail[0]?.author?.profileImage ? `https://bloggify-jet.vercel.app/${singleBlogDetail[0]?.author?.profileImage}` : defaultProfile
+  const profileImageUrl = singleBlogDetail[0]?.author?.profileImage ? singleBlogDetail[0]?.author?.profileImage : defaultProfile
 
   const date = new Date(singleBlogDetail[0]?.createdAt)
   const formattedDate = date.toDateString();
@@ -118,7 +118,7 @@ if(loading){
             <div className='blogContent '>
 
               <div className='h-96 overflow-hidden ' >
-                <img className='w-full h-full object-cover ' src={`https://bloggify-jet.vercel.app/${singleBlogDetail[0]?.coverImage}`} alt="" />
+                <img className='w-full h-full object-cover ' src={singleBlogDetail[0]?.coverImage} alt="" />
               </div>
               <div>
                 <p className=' mt-8 text-sm'><i>Summary : {singleBlogDetail[0]?.summary}</i></p>

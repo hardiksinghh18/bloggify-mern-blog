@@ -5,7 +5,7 @@ const BlogProvider = ({ children }) => {
     const [blogsData, setBlogsData] = useState([])
     const [loading, setLoading] = useState(true)
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    
+    axios.defaults.withCredentials = true; 
 
     const fetchBlogData = async () => {
         try {

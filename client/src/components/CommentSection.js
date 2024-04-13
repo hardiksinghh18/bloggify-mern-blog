@@ -84,7 +84,7 @@ const CommentSection = ({ singleBlogId }) => {
                             <a href={`/profile/${comment?.userId?._id}/${comment?.userId?.name}`} className='flex items-start justify-center pt-3'>
                                 <img
 
-                                    src={comment?.userId?.profileImage ? `https://bloggify-jet.vercel.app/${comment?.userId?.profileImage}` : defaultProfile}
+                                    src={comment?.userId?.profileImage ? comment?.userId?.profileImage : defaultProfile}
                                     alt="Profile"
                                     className="h-8 w-8 mr-4 rounded-full  "
                                 />

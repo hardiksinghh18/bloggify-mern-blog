@@ -36,7 +36,7 @@ const BlogLayoutfour = (props) => {
                     className=" col-span-12  lg:col-span-4 h-full rounded-xl overflow-hidden"
                 >
 
-                    <img className=" aspect-square h-10 w-16 sm:h-16 sm:w-20 object-cover object-center group-hover:scale-105 transition-all ease duration-300" src={`https://bloggify-jet.vercel.app/${blog?.coverImage}`} alt="" />
+                    <img className=" aspect-square h-10 w-16 sm:h-16 sm:w-20 object-cover object-center group-hover:scale-105 transition-all ease duration-300" src={blog?.coverImage} alt="" />
 
 
                 </a>

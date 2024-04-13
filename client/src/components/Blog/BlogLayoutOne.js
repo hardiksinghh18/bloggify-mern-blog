@@ -9,7 +9,7 @@ const BlogLayoutOne = ({ blog }) => {
 
             <a href={`blogs/${blog?._id}/${blog?.title}`} className="mt-6">
                 <div className='  relative w-32 h-24 sm:w-96 sm:h-64   '>
-                    <img className="w-full h-full object-center object-cover rounded-xl  group-hover:scale-105 transition-all ease duration-300" src={`https://bloggify-jet.vercel.app/${blog?.coverImage}`} alt="" />
+                    <img className="w-full h-full object-center object-cover rounded-xl  group-hover:scale-105 transition-all ease duration-300" src={blog?.coverImage} alt="" />
                     <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 rounded-xl"></div>
                 </div>
             </a>

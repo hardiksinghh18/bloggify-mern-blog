@@ -25,9 +25,7 @@ const UserProfile = () => {
   const userId = useParams()
   const [isOpen, setIsOpen] = useState(false);
 
-  const profileImageUrl = userProfile?.profileImage
-    ? `https://bloggify-jet.vercel.app/${userProfile?.profileImage}`
-    : defaultProfile;
+  const profileImageUrl = userProfile?.profileImage? userProfile?.profileImage: defaultProfile;
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
