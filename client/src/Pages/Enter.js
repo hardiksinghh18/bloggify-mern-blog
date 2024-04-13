@@ -3,7 +3,7 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/userContext';
-// import cookie from "cookie-parser"
+ import cookie from "cookie-parser"
 const Enter = () => {
     const { isAuthenticated, setIsAuthenticated } = useAuthContext()
     const [isActive, setisActive] = useState(false)
