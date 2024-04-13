@@ -1,7 +1,7 @@
 
 const express = require('express')
 const multer = require('multer')
-const upload = multer({ dest: 'uploads/' })
+const upload = multer({ dest: '/tmp/uploads/' })
 const uploadImageOnCloud=require('./utils/cloudinary')
 const cors = require('cors')
 const fs = require('fs')
