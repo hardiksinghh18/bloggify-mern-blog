@@ -65,8 +65,8 @@ app.post('/register', async (req, res) => {
 
         await user.save()
         // await res.cookie('jwt', token)
-        res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000 ,sameSite:None})
-        res.cookie('refreshToken', refreshToken, { maxAge: 90 * 24 * 60 * 60 * 1000 , sameSite:None})
+        res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000 ,SameSite:None})
+        res.cookie('refreshToken', refreshToken, { maxAge: 90 * 24 * 60 * 60 * 1000 , SameSite:None})
 
 
 
@@ -98,8 +98,8 @@ app.post('/login', async (req, res) => {
             const refreshToken = await userDetails.generateRefreshToken();
 
             
-            res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000 ,sameSite:None})
-            res.cookie('refreshToken', refreshToken, { maxAge: 90 * 24 * 60 * 60 * 1000 ,sameSite:None})
+            res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000 ,SameSite:None})
+            res.cookie('refreshToken', refreshToken, { maxAge: 90 * 24 * 60 * 60 * 1000 ,SameSite:None})
 
             res.json({ Login: true, message: 'Login successful' })
         } else {
