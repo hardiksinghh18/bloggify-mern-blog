@@ -30,7 +30,7 @@ app.use(cors({
 
     // origin: ['http://localhost:3000'],
   
-    origin: 'https://bloggify-mern.vercel.app',
+    origin: ['https://bloggify-mern.vercel.app'],
  methods:["POST","GET"],
 
     credentials: true
