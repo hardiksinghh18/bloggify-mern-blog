@@ -59,7 +59,7 @@ const Enter = () => {
             const res = await axios.post('https://bloggify-jet.vercel.app/login', {
                 email, password
             })
-
+console.log(res.cookie)
             if (res?.data?.Login) {
                 setIsAuthenticated(true)
                 toast.success('Login successful!');
