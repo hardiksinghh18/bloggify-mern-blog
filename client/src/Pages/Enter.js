@@ -3,7 +3,7 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom'
 import { useAuthContext } from '../context/userContext';
- import cookie from "cookie-parser"
+ 
 const Enter = () => {
     const { isAuthenticated, setIsAuthenticated } = useAuthContext()
     const [isActive, setisActive] = useState(false)
@@ -59,7 +59,7 @@ const Enter = () => {
             const res = await axios.post('https://bloggify-jet.vercel.app/login', {
                 email, password
             })
-console.log(res.cookie)
+
             if (res?.data?.Login) {
                 setIsAuthenticated(true)
                 toast.success('Login successful!');
