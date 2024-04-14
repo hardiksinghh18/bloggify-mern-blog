@@ -21,17 +21,20 @@ const Navbar = () => {
   const handleLogout = () => {
     const confirmLogout = window.confirm('Are you sure you want to log out?');
     if (confirmLogout) {
-      axios.get('https://bloggify-jet.vercel.app/logout')
 
-        .then(res => {
-          if (!res.data.valid) {
+      document.cookie = accessToken + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = refreshToken + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      // axios.get('https://bloggify-jet.vercel.app/logout')
 
-            toast.success('Logout Successful')
-            setIsAuthenticated(false)
-            setUserInfo('')
-            navigate('/')
-          }
-        }).catch(err => console.log(err))
+      //   .then(res => {
+      //     if (!res.data.valid) {
+
+      //       toast.success('Logout Successful')
+      //       setIsAuthenticated(false)
+      //       setUserInfo('')
+      //       navigate('/')
+      //     }
+      //   }).catch(err => console.log(err))
     }
 
 
