@@ -317,10 +317,10 @@ app.post('/deleteblog', async (req, res) => {
 
 app.get('/logout', verifyuser, async (req, res) => {
     try {
-       return  res.cookie('accessToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true })
-        .cookie('refreshToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true})
-        .cookie('temptoken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true})
-        .json({ valid: false, message: 'Logged Out' })
+         res.cookie('accessToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true })
+        res.cookie('refreshToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true})
+        res.cookie('temptoken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true})
+        res.json({ valid: false, message: 'Logged Out' })
     } catch (error) {
         console.log(error)
     }
