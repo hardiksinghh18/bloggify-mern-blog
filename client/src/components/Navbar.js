@@ -16,12 +16,12 @@ const Navbar = () => {
   const [mode, setMode] = useThemeSwitch();
   const [click, setClick] = useState(false);
 
-  axios.defaults.withCredentials = true;
 
   const handleLogout = () => {
     const confirmLogout = window.confirm('Are you sure you want to log out?');
     if (confirmLogout) {
 
+  axios.defaults.withCredentials = true;
      axios.get('https://bloggify-jet.vercel.app/logout')
 
         .then(res => {
