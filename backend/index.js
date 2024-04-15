@@ -65,8 +65,8 @@ app.post('/register', async (req, res) => {
 
         await user.save()
         // await res.cookie('jwt', token)
-        res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true,sameSite: 'none' })
-        res.cookie('refreshToken', refreshToken, { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true, sameSite: 'none'})
+        res.cookie('accessToken', token, {domain :"https://bloggify-mern.vercel.app", maxAge: 90 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true,sameSite: 'none' })
+        res.cookie('refreshToken', refreshToken, {domain :"https://bloggify-mern.vercel.app", maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true, sameSite: 'none'})
 
 
 
@@ -98,8 +98,8 @@ app.post('/login', async (req, res) => {
             const refreshToken = await userDetails.generateRefreshToken();
 
             
-            res.cookie('accessToken', token, {domian :"https://bloggify-mern.vercel.app", maxAge: 90 * 24 * 60 * 60 * 1000,httpOnly: true, secure: true,sameSite: 'none'  })
-            res.cookie('refreshToken', refreshToken, { domian :"https://bloggify-mern.vercel.app",maxAge: 90 * 24 * 60 * 60 * 1000 ,httpOnly: true, secure: true,sameSite: 'none' })
+            res.cookie('accessToken', token, {domain :"https://bloggify-mern.vercel.app", maxAge: 90 * 24 * 60 * 60 * 1000,httpOnly: true, secure: true,sameSite: 'none'  })
+            res.cookie('refreshToken', refreshToken, { domain :"https://bloggify-mern.vercel.app",maxAge: 90 * 24 * 60 * 60 * 1000 ,httpOnly: true, secure: true,sameSite: 'none' })
 
             res.json({ Login: true, message: 'Login successful' })
         } else {
@@ -317,9 +317,9 @@ app.post('/deleteblog', async (req, res) => {
 
 app.get('/logout', verifyuser, async (req, res) => {
     try {
-         res.cookie('accessToken', "", { domian :"https://bloggify-mern.vercel.app",maxAge: 1, httpOnly: true, secure: true ,sameSite: 'none'  })
-        res.cookie('refreshToken', "", {domian :"https://bloggify-mern.vercel.app",maxAge: 1 , httpOnly: true, secure: true,sameSite: 'none'  })
-        res.cookie('temptoken', "", { domian :"https://bloggify-mern.vercel.app",expiresIn:'1s', httpOnly: true, secure: true,sameSite: 'none'  })
+         res.cookie('accessToken', "", {domain :"https://bloggify-mern.vercel.app",maxAge: 1, httpOnly: true, secure: true ,sameSite: 'none'  })
+        res.cookie('refreshToken', "", {domain :"https://bloggify-mern.vercel.app",maxAge: 1 , httpOnly: true, secure: true,sameSite: 'none'  })
+       
         res.json({ valid: false, message: 'Logged Out' })
     } catch (error) {
         console.log(error)
