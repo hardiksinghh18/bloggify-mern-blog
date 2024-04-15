@@ -317,8 +317,8 @@ app.post('/deleteblog', async (req, res) => {
 
 app.post('/logout', verifyuser, async (req, res) => {
     try {
-         res.clearCookie('accessToken',{path:'/',domain:'https://bloggify-jet.vercel.app'})
-        res.clearCookie('refreshToken',{path:'/',domain:'https://bloggify-jet.vercel.app'})
+         res.clearCookie('accessToken',{path:'/',domain:'bloggify-jet.vercel.app'})
+        res.clearCookie('refreshToken',{path:'/',domain:'bloggify-jet.vercel.app'})
        
         res.json({ valid: false, message: 'Logged Out' })
     } catch (error) {
