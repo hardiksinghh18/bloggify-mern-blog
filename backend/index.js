@@ -98,8 +98,8 @@ app.post('/login', async (req, res) => {
             const refreshToken = await userDetails.generateRefreshToken();
 
             
-            res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000,httpOnly: true, secure: true, sameSite: 'none'})
-            res.cookie('refreshToken', refreshToken, { maxAge: 90 * 24 * 60 * 60 * 1000 ,httpOnly: true, secure: true, sameSite: 'none'})
+            res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000,httpOnly: true, secure: true})
+            res.cookie('refreshToken', refreshToken, { maxAge: 90 * 24 * 60 * 60 * 1000 ,httpOnly: true, secure: true})
 
             res.json({ Login: true, message: 'Login successful' })
         } else {
@@ -317,9 +317,9 @@ app.post('/deleteblog', async (req, res) => {
 
 app.get('/logout', verifyuser, async (req, res) => {
     try {
-       return  res.cookie('accessToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true,sameSite: 'none' })
-        .cookie('refreshToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true, sameSite: 'none'})
-        .cookie('temptoken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true, sameSite: 'none'})
+       return  res.cookie('accessToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true })
+        .cookie('refreshToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true})
+        .cookie('temptoken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true})
         .json({ valid: false, message: 'Logged Out' })
     } catch (error) {
         console.log(error)
