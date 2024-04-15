@@ -319,6 +319,7 @@ app.get('/logout', verifyuser, async (req, res) => {
     try {
        return  res.cookie('accessToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true,sameSite: 'none' })
         .cookie('refreshToken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true, sameSite: 'none'})
+        .cookie('temptoken', "", { maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true, sameSite: 'none'})
         .json({ valid: false, message: 'Logged Out' })
     } catch (error) {
         console.log(error)
