@@ -317,8 +317,8 @@ app.post('/deleteblog', async (req, res) => {
 
 app.get('/logout', verifyuser, async (req, res) => {
     try {
-         res.cookie('accessToken', "", { expiresIn:'1s', httpOnly: true, secure: true ,sameSite: 'none'  })
-        res.cookie('refreshToken', "", { expiresIn:'1s' , httpOnly: true, secure: true,sameSite: 'none'  })
+         res.cookie('accessToken', "", { maxAge: 1, httpOnly: true, secure: true ,sameSite: 'none'  })
+        res.cookie('refreshToken', "", {maxAge: 1 , httpOnly: true, secure: true,sameSite: 'none'  })
         res.cookie('temptoken', "", { expiresIn:'1s', httpOnly: true, secure: true,sameSite: 'none'  })
         res.json({ valid: false, message: 'Logged Out' })
     } catch (error) {
