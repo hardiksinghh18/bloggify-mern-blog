@@ -315,7 +315,7 @@ app.post('/deleteblog', async (req, res) => {
     return res.json({ message: `Blog with id ${blogId} deleted` })
 })
 
-app.post('/logout', verifyuser, async (req, res) => {
+app.get('/logout', verifyuser, async (req, res) => {
     try {
          res.clearCookie('accessToken')
         res.clearCookie('refreshToken')
