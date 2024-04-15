@@ -317,8 +317,8 @@ app.post('/deleteblog', async (req, res) => {
 
 app.get('/logout', verifyuser, async (req, res) => {
     try {
-        res.clearCookie('accessToken')
-        res.clearCookie('refreshToken')
+        res.clearCookie('accessToken',{httpOnly: true, secure: true, sameSite: 'none'})
+        res.clearCookie('refreshToken',{httpOnly: true, secure: true, sameSite: 'none'})
         res.json({ valid: false, message: 'Logged Out' })
     } catch (error) {
         console.log(error)
