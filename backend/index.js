@@ -98,8 +98,8 @@ app.post('/login', async (req, res) => {
             const refreshToken = await userDetails.generateRefreshToken();
 
             
-            res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000,httpOnly: true, secure: true,sameSite: 'none'  })
             res.cookie('refreshToken', refreshToken, { maxAge: 90 * 24 * 60 * 60 * 1000 ,httpOnly: true, secure: true,sameSite: 'none' })
+            res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000,httpOnly: true, secure: true,sameSite: 'none'  })
 
             res.json({ Login: true, message: 'Login successful' })
         } else {
