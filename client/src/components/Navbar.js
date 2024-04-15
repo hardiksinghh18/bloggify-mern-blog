@@ -22,7 +22,7 @@ const Navbar = () => {
     if (confirmLogout) {
 
   axios.defaults.withCredentials = true;
-     axios.post('https://bloggify-jet.vercel.app/logout',{},{ withCredentials: true })
+     axios.get('https://bloggify-jet.vercel.app/logout',{ withCredentials: true })
 
         .then(res => {
           if (!res.data.valid) {
