@@ -71,11 +71,11 @@ app.post('/register', async (req, res) => {
 
         await user.save()
         // await res.cookie('jwt', token)
-      res.cookie('accessToken', token, cookieOptions)
+      res.cookie('refreshToken', refreshToken, cookieOptions)
      
         return  res
         .status(200)
-        .cookie('refreshToken', refreshToken, cookieOptions)
+        .cookie('accessToken', token, cookieOptions)
         .json({ Login: true, valid: true, message: "registered" })
 
     } catch (error) {
@@ -103,12 +103,12 @@ app.post('/login', async (req, res) => {
             const token = await userDetails.generateAuthToken();
             const refreshToken = await userDetails.generateRefreshToken();
 
-         res.cookie('accessToken', token,  cookieOptions)
+         res.cookie('refreshToken', refreshToken,cookieOptions) 
             
          
          return  res
          .status(200)
-         .cookie('refreshToken', refreshToken,cookieOptions) 
+         .cookie('accessToken', token,  cookieOptions)
          .json({ Login: true, message: 'Login successful' })
          
         } else {
