@@ -103,11 +103,11 @@ app.post('/login', async (req, res) => {
             const token = await userDetails.generateAuthToken();
             const refreshToken = await userDetails.generateRefreshToken();
 
-         res.cookie('refreshToken', refreshToken,cookieOptions)   
+         res.cookie('accessToken', token,  cookieOptions)
+          .cookie('refreshToken', refreshToken,cookieOptions)   
+         
          return  res
          .status(200)
-         .cookie('accessToken', token,  cookieOptions)
-         .cookie('refreshToken', refreshToken,cookieOptions)
          .json({ Login: true, message: 'Login successful' })
          
         } else {
