@@ -21,7 +21,7 @@ const PORT = process.env.PORT || 5000
 const cookieParser = require('cookie-parser')
 const { timeStamp } = require('console')
 const cookieOptions={
- maxAge: 90 * 24 * 60 * 60 * 1000,
+ // maxAge: 90 * 24 * 60 * 60 * 1000,
  path: "/",
  httpOnly: true,
  secure: true,
