@@ -105,9 +105,7 @@ app.post('/login', async (req, res) => {
             const refreshToken = await userDetails.generateRefreshToken();
 
          
-         res.cookie('cookie1', 'thisiscookieone',  cookieOptions);
-         res.cookie('cookie2', 'thisiscookietwo',  cookieOptions);
-         
+        
          return  res
          .status(200)
          .cookie('accessToken', token,  cookieOptions)
