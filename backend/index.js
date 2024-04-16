@@ -329,8 +329,8 @@ app.post('/logout', verifyuser, async (req, res) => {
     try {
        return  res
         .status(200)
-        .clearCookie('accessToken',{path:'/',domain:'bloggify-jet.vercel.app'})
-        .clearCookie('refreshToken',{path:'/',domain:'bloggify-jet.vercel.app'})
+        .clearCookie('accessToken',{path:'/',domain:'.bloggify-jet.vercel.app'})
+        .clearCookie('refreshToken',{path:'/',domain:'.bloggify-jet.vercel.app'})
         .json({ valid: false, message: 'Logged Out' })
      
     } catch (error) {
