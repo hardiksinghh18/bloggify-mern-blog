@@ -106,11 +106,8 @@ app.post('/login', async (req, res) => {
             
          return  res
          .status(200)
-          .cookie('cookie1', 'thisiscookieone',  cookieOptions)
          .cookie('accessToken', token,  cookieOptions)
-          
          .cookie('refreshToken', refreshToken,cookieOptions)
-          .cookie('cookie2', 'thisiscookietwo',  cookieOptions)
          .json({ Login: true, message: 'Login successful' })
          
         } else {
