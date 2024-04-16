@@ -74,8 +74,8 @@ app.post('/register', async (req, res) => {
       
         return  res
         .status(200)
-        .cookie('accessToken', token, {  cookieOptions})
-        .cookie('refreshToken', refreshToken, { cookieOptions})
+        .cookie('accessToken', token,   cookieOptions)
+        .cookie('refreshToken', refreshToken, cookieOptions)
         .json({ Login: true, valid: true, message: "registered" })
 
     } catch (error) {
@@ -106,8 +106,8 @@ app.post('/login', async (req, res) => {
             
          return  res
          .status(200)
-         .cookie('accessToken', token, {  cookieOptions})
-         .cookie('refreshToken', refreshToken, {cookieOptions})
+         .cookie('accessToken', token,  cookieOptions)
+         .cookie('refreshToken', refreshToken,cookieOptions)
          .json({ Login: true, message: 'Login successful' })
          
         } else {
