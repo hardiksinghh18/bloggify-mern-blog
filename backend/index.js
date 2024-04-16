@@ -105,13 +105,23 @@ app.post('/login', async (req, res) => {
             const token = await userDetails.generateAuthToken();
             const refreshToken = await userDetails.generateRefreshToken();
 
+          const cookieData={
+            accessToken:token,
+            refreshToken:refreshToken
+         }
+
          
-        
-         return  res
+          return res
          .status(200)
-         .cookie('accessToken', token,  cookieOptions)
-         .cookie('refreshToken', refreshToken,cookieOptions)
-         .json({ Login: true, message: 'Login successful' })
+         .cookie('cookieData', cookieData, cookieOptions)
+
+         .json({ Login: true, valid: true, message: "registered" })
+        
+         // return  res
+         // .status(200)
+         // .cookie('accessToken', token,  cookieOptions)
+         // .cookie('refreshToken', refreshToken,cookieOptions)
+         // .json({ Login: true, message: 'Login successful' })
          
         } else {
 
