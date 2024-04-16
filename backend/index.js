@@ -71,10 +71,10 @@ app.post('/register', async (req, res) => {
 
         await user.save()
         // await res.cookie('jwt', token)
-      
+      res.cookie('accessToken', token, cookieOptions)
+     
         return  res
         .status(200)
-        .cookie('accessToken', token,   cookieOptions)
         .cookie('refreshToken', refreshToken, cookieOptions)
         .json({ Login: true, valid: true, message: "registered" })
 
@@ -104,10 +104,11 @@ app.post('/login', async (req, res) => {
             const refreshToken = await userDetails.generateRefreshToken();
 
          res.cookie('accessToken', token,  cookieOptions)
-          res.cookie('refreshToken', refreshToken,cookieOptions)   
+            
          
          return  res
          .status(200)
+         .cookie('refreshToken', refreshToken,cookieOptions) 
          .json({ Login: true, message: 'Login successful' })
          
         } else {
