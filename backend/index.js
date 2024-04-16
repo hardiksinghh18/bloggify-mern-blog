@@ -21,6 +21,7 @@ const PORT = process.env.PORT || 5000
 const cookieParser = require('cookie-parser')
 const { timeStamp } = require('console')
 const cookieOptions={
+ maxAge: 90 * 24 * 60 * 60 * 1000,
  httpOnly: true,
  secure: true,
  sameSite: 'None'
@@ -73,8 +74,8 @@ app.post('/register', async (req, res) => {
       
         return  res
         .status(200)
-        .cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000, cookieOptions})
-        .cookie('refreshToken', refreshToken, {maxAge: 90 * 24 * 60 * 60 * 1000 , cookieOptions})
+        .cookie('accessToken', token, {  cookieOptions})
+        .cookie('refreshToken', refreshToken, { cookieOptions})
         .json({ Login: true, valid: true, message: "registered" })
 
     } catch (error) {
@@ -105,8 +106,8 @@ app.post('/login', async (req, res) => {
             
          return  res
          .status(200)
-         .cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000, cookieOptions})
-         .cookie('refreshToken', refreshToken, {maxAge: 90 * 24 * 60 * 60 * 1000 , cookieOptions})
+         .cookie('accessToken', token, {  cookieOptions})
+         .cookie('refreshToken', refreshToken, {cookieOptions})
          .json({ Login: true, message: 'Login successful' })
          
         } else {
