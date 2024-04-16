@@ -328,6 +328,7 @@ app.post('/deleteblog', async (req, res) => {
 
 app.post('/logout', verifyuser, async (req, res) => {
     try {
+     res.cookie('accessToken')
        return  res
         .status(200)
         .clearCookie('accessToken')
