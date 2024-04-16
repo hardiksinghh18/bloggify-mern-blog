@@ -20,7 +20,11 @@ const app = express()
 const PORT = process.env.PORT || 5000
 const cookieParser = require('cookie-parser')
 const { timeStamp } = require('console')
-
+const cookieOptions={
+ httpOnly: true,
+ secure: true,
+ sameSite: 'None'
+}
 
 app.use(express.json())
 app.use('/uploads', express.static('uploads'))
@@ -49,6 +53,7 @@ app.get('/register', (req, res) => {
     res.json('register page')
 })
 
+
 app.post('/register', async (req, res) => {
 
     try {
@@ -65,12 +70,12 @@ app.post('/register', async (req, res) => {
 
         await user.save()
         // await res.cookie('jwt', token)
-        res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000, httpOnly: true, secure: true,sameSite: 'None' })
-        res.cookie('refreshToken', refreshToken, {maxAge: 90 * 24 * 60 * 60 * 1000 , httpOnly: true, secure: true, sameSite: 'None'})
-
-
-
-        res.json({ Login: true, valid: true, message: "registered" })
+      
+        return  res
+        .status(200)
+        .cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000, cookieOptions})
+        .cookie('refreshToken', refreshToken, {maxAge: 90 * 24 * 60 * 60 * 1000 , cookieOptions})
+        .json({ Login: true, valid: true, message: "registered" })
 
     } catch (error) {
         res.status(400).json(error)
@@ -98,10 +103,12 @@ app.post('/login', async (req, res) => {
             const refreshToken = await userDetails.generateRefreshToken();
 
             
-            res.cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000,httpOnly: true, secure: true,sameSite: 'None'  })
-            res.cookie('refreshToken', refreshToken, { maxAge: 90 * 24 * 60 * 60 * 1000 ,httpOnly: true, secure: true,sameSite: 'None' })
-
-            res.json({ Login: true, message: 'Login successful' })
+         return  res
+         .status(200)
+         .cookie('accessToken', token, { maxAge: 90 * 24 * 60 * 60 * 1000, cookieOptions})
+         .cookie('refreshToken', refreshToken, {maxAge: 90 * 24 * 60 * 60 * 1000 , cookieOptions})
+         .json({ Login: true, message: 'Login successful' })
+         
         } else {
 
             res.json({ Login: false, Message: " Invalid Email or Password" })
@@ -317,10 +324,12 @@ app.post('/deleteblog', async (req, res) => {
 
 app.post('/logout', verifyuser, async (req, res) => {
     try {
-         res.clearCookie('accessToken',{path:'/',domain:'bloggify-jet.vercel.app'})
-        res.clearCookie('refreshToken',{path:'/',domain:'bloggify-jet.vercel.app'})
-       
-        res.json({ valid: false, message: 'Logged Out' })
+       return  res
+        .status(200)
+        .clearCookie('accessToken',{path:'/',domain:'bloggify-jet.vercel.app'})
+        .clearCookie('refreshToken',{path:'/',domain:'bloggify-jet.vercel.app'})
+        .json({ valid: false, message: 'Logged Out' })
+     
     } catch (error) {
         console.log(error)
     }
