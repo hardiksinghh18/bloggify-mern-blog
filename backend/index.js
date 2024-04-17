@@ -330,8 +330,8 @@ app.post('/logout', verifyuser, async (req, res) => {
     
        return  res
         .status(200)
-        .clearCookie('accessToken')
-        .clearCookie('refreshToken')
+        .clearCookie('accessToken',cookieOptions)
+        .clearCookie('refreshToken',cookieOptions)
         .json({ valid: false, message: 'Logged Out' })
      
     } catch (error) {
