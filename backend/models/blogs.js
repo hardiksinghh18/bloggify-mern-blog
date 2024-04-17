@@ -18,7 +18,8 @@ const blogSchema=new mongoose.Schema({
    },
    author:{
     type:mongoose.Schema.Types.ObjectId,
-    ref:'Register'
+    ref:'Register',
+    required:true  
    },
    views:{
     type:Number,
