@@ -42,8 +42,8 @@ const ProfilePictureEditor = (props) => {
       <AvatarEditor
         ref={setEditor}
         image={image}
-        width={250}
-        height={250}
+        width={150}
+        height={150}
         border={50}
         borderRadius={125}
         color={[255, 255, 255, 0.6]}
@@ -54,12 +54,12 @@ const ProfilePictureEditor = (props) => {
         type="file"
         onChange={(e) => setImage(e.target.files[0])}
         accept="image/*"
-        className="mt-4 p-2 border border-gray-300 rounded"
+         className="   pl-32 text-xs  px-8  max-w-fit  overflow-hidden  p-2 "
       />
       <button
 
         type='submit'
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+       className="mt-4 bg-zinc-900 text-xs   text-white px-4 py-2 rounded hover:bg-blue-600"
       >
         Save Profile Picture
       </button>
