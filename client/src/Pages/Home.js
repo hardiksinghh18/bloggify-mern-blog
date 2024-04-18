@@ -7,7 +7,7 @@ import FeaturedSection from '../components/FeaturedSection'
 import { useAuthContext } from '../context/userContext'
 import Footer from '../components/Footer'
 import axios from 'axios'
-import LoadingSkeleton from '../components/LoadingSkeletons/LoadingSkeleton'
+import HomePageLoading from '../components/LoadingSkeletons/HomePageLoading'
 const Home = () => {
   const { userInfo, setUserInfo, isAuthenticated, setIsAuthenticated } = useAuthContext()
   const { blogsData, setBlogsData, loading, setLoading } = useBlogContext()
@@ -45,7 +45,7 @@ const Home = () => {
   if (loading) {
     return (
      
-      <LoadingSkeleton/>
+      <HomePageLoading/>
     )
   }
 
