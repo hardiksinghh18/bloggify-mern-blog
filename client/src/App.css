@@ -271,15 +271,6 @@ body::-webkit-scrollbar {
 
 
 
-@media only screen and (max-width:400px) {
-    .form_container form {
-       
-       padding-right: 0px;
-         width: 85vw;
-     
-    }
-    
-}
 
 
 @media only screen and (max-width: 600px){
@@ -294,14 +285,14 @@ body::-webkit-scrollbar {
         /* height:100%; */
     }
 
-
-
-    .form_container form {
-      
-        padding: 0 20px;
+ .form_container form {
        
-     
-    }
+       
+         width: 85vw;
+         
+        padding: 0 20px;
+      
+     }
 
     .form_container {
         width: 95%;
