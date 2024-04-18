@@ -20,8 +20,15 @@ const app = express()
 const PORT = process.env.PORT || 5000
 const cookieParser = require('cookie-parser')
 const { timeStamp } = require('console')
-const cookieOptions={
- maxAge: 90 * 24 * 60 * 60 * 1000,
+const accessCookieOptions={
+ maxAge: 24 * 60 * 60 * 1000,
+ path: "/",
+ httpOnly: true,
+ secure: true,
+ sameSite: 'None'
+}
+const refreshCookieOptions={
+ maxAge: 30 * 24 * 60 * 60 * 1000,
  path: "/",
  httpOnly: true,
  secure: true,
@@ -76,8 +83,8 @@ app.post('/register', async (req, res) => {
      
         return  res
         .status(200)
-        .cookie('accessToken', token, cookieOptions)
-        .cookie('refreshToken', refreshToken, cookieOptions)
+        .cookie('accessToken', token, accessCookieOptions)
+        .cookie('refreshToken', refreshToken, refreshCookieOptions)
         .json({ Login: true, valid: true, message: "registered" })
 
     } catch (error) {
@@ -108,8 +115,8 @@ app.post('/login', async (req, res) => {
         
          return  res
          .status(200)
-         .cookie('accessToken', token,  cookieOptions)
-         .cookie('refreshToken', refreshToken,cookieOptions)
+         .cookie('accessToken', token,  accessCookieOptions)
+         .cookie('refreshToken', refreshToken,refreshCookieOptions)
          .json({ Login: true, message: 'Login successful' })
          
         } else {
@@ -330,8 +337,8 @@ app.post('/logout', verifyuser, async (req, res) => {
     
        return  res
         .status(200)
-        .clearCookie('accessToken',cookieOptions)
-        .clearCookie('refreshToken',cookieOptions)
+        .clearCookie('accessToken',accessCookieOptions)
+        .clearCookie('refreshToken',refreshCookieOptions)
         .json({ valid: false, message: 'Logged Out' })
      
     } catch (error) {
