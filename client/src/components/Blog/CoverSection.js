@@ -8,10 +8,10 @@ const CoverSection = () => {
   return (
     <div className="coverSection relative   flex flex-col justify-center items-center">
 
-        <div className='imagediv relative h-96 rounded-lg overflow-hidden  '>
-          <img className='rounded-lg w-screen' src={coverImage} alt="" />
+        <div className='imagediv relative h-96  overflow-hidden  '>
+          <img className=' w-screen' src={coverImage} alt="" />
 
-        <div className='gradient bg-gradient-to-t from-black to-transparent opacity-90 h-full  w-full rounded-lg   absolute  top-0  '></div>
+        <div className='gradient bg-gradient-to-t from-black to-transparent opacity-90 h-full  w-full  absolute  top-0  '></div>
         </div>
 
         <div className=' absolute flex flex-col justify-center items-center '>
