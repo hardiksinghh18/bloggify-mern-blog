@@ -105,7 +105,7 @@ const UserProfile = () => {
   useEffect(() => {
     fetchData()
     fetchUserDetails()
-  }, [saved])
+  }, [saved,isOpen])
 
 
 
