@@ -111,9 +111,9 @@ const Enter = () => {
 
 
 
-                            <div className=" flex   gap-2 mt-4 justify-center items-center sm:hidden">
+                            <div className=" flex   gap-2 mt-4 justify-center text-xs sm:text-base items-center sm:hidden">
                                 <h1 className='font-semibold'>Don't have an account ?</h1>
-                                <p className=" font-semibold  border-black  border-b-[1px] text-xl hover:cursor-pointer" id="register" onClick={handleRegister}>Sign Up</p>
+                                <p className=" font-semibold  border-black  border-b-[.5px]  hover:cursor-pointer" id="register" onClick={handleRegister}>Sign Up</p>
                             </div>
                         </form>
 
@@ -139,9 +139,9 @@ const Enter = () => {
                             </div>
                             <button type='submit'>Sign Up</button>
 
-                            <div className=" flex gap-2 mt-4 justify-center items-center sm:hidden">
+                            <div className=" flex gap-2 mt-4 justify-center text-xs sm:text-base items-center sm:hidden">
                                 <h1 className='font-semibold'>Already a User ?</h1>
-                                <p className=" font-semibold  border-black  border-b-[1px] text-xl hover:cursor-pointer" id="login" onClick={handleLogin}>Sign In</p>
+                                <p className=" font-semibold  border-black  border-b-[.5px] hover:cursor-pointer" id="login" onClick={handleLogin}>Sign In</p>
                             </div>
                         </form>
 
