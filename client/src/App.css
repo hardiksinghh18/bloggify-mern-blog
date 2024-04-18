@@ -275,7 +275,7 @@ body::-webkit-scrollbar {
     .form_container form {
        
        padding-right: 0px;
-        /* width: 30rem; */
+         width: 85vw;
      
     }
     
@@ -304,11 +304,7 @@ body::-webkit-scrollbar {
     }
 
     .form_container {
-      
-        width: 80%;
-        /* width: fit-content; */
-   
-       
+        width: 95%;
     }
 
 
