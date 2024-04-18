@@ -170,7 +170,7 @@ const UserProfile = () => {
 
               {isOpen && <div className="fixed inset-0 flex items-center justify-center z-50">
                 <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-                <div className=" relative bg-white rounded-lg p-8 z-50">
+                <div className=" relative bg-white rounded-lg pb-8 lg:p-8  z-50 max-w-[80vw]  lg:w-80 ">
                   <p onClick={toggleModal} className='absolute top-4  right-4 hover:cursor-pointer text-2xl '><i className='bx bx-x'></i></p>
                   <ProfilePictureEditor profileImageUrl={profileImageUrl} toggleModal={toggleModal} isOpen={isOpen} setIsOpen={setIsOpen} />
                 </div>
