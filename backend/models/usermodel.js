@@ -39,7 +39,7 @@ type:String
 userSchema.methods.generateAuthToken = async function () {
     try {
 
-        const token = jwt.sign({ email:this.email },process.env.ACCESS_TOKEN_KEY,{expiresIn:'90d'});
+        const token = jwt.sign({ email:this.email },process.env.ACCESS_TOKEN_KEY,{expiresIn:'1d'});
        
         // this.tokens = this.tokens.concat({token: token })
 
@@ -53,7 +53,7 @@ userSchema.methods.generateAuthToken = async function () {
 userSchema.methods.generateRefreshToken = async function () {
     try {
 
-        const refreshToken = jwt.sign({ email:this.email },process.env.REFRESH_TOKEN_KEY,{expiresIn:'90d'});
+        const refreshToken = jwt.sign({ email:this.email },process.env.REFRESH_TOKEN_KEY,{expiresIn:'30d'});
        
         // this.tokens = this.tokens.concat({token: token })
 
