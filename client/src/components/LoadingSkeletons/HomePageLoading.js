@@ -7,7 +7,7 @@ const HomePageLoading = () => {
 
 
 
-            <div className=" w-screen mx-4 px-2 flex flex-col gap-2 justify-center items-center h-40 lg:h-80 rounded-2xl animate-pulse">
+            <div className=" w-screen mx-4 my-16 px-2 flex flex-col gap-2 justify-center items-center h-40 lg:h-80 rounded-2xl animate-pulse">
                 <div className="w-screen h-40 bg-gray-300 rounded-lg"></div>
 
 
