@@ -88,7 +88,7 @@ const Enter = () => {
 
             <div className="signup_page  ">
 
-                <div className={isActive ? 'form_container active  justify-center items-center w-full     sm:w-[60vw] ' : 'form_container justify-center items-center w-full sm:w-[60vw]'} id="form_container">
+                <div className={isActive ? 'form_container activeForm  justify-center items-center w-full     sm:w-[60vw] ' : 'form_container justify-center items-center w-full sm:w-[60vw]'} id="form_container">
 
                     <div className='form-container   sign-up sm:translate-x-full '>
                         <form action='/login' method='POST' onSubmit={handlelogin} >
