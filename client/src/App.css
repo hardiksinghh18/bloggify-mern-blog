@@ -18,7 +18,7 @@ body {
     flex-direction: column;
    overflow-x: hidden;
     scroll-behavior: smooth;
-    
+    /* height: 100vh; */
 }
 
 body::-webkit-scrollbar {
@@ -33,11 +33,11 @@ body::-webkit-scrollbar {
     border: 1px solid rgb(29, 29, 29);  /* creates padding around scroll thumb */
   }
 
-
-.active{
+  .active{
     color: rgb(255, 0, 106);
   font-weight: bold; 
   }
+
 .relativeProfile:hover .absoluteProfile {
     display: block;
   }
@@ -124,7 +124,7 @@ body::-webkit-scrollbar {
     flex-direction: column;
     padding: 0 30px;
    
-    width: 23rem;
+    width: 20rem;
     height: 100%;
 }
 
@@ -141,7 +141,7 @@ body::-webkit-scrollbar {
 
 .form-container {
     position: absolute;
-    /* width: 768px; */
+width: 100%;
     top: 0;
     height: 100%;
     transition: all 0.6s ease-in-out;
@@ -153,7 +153,7 @@ body::-webkit-scrollbar {
     z-index: 2;
 }
 
-.form_container.active .sign-in {
+.form_container.activeForm .sign-in {
     transform: translateX(100%);
 }
 
@@ -165,7 +165,7 @@ body::-webkit-scrollbar {
     z-index: 1;
 }
 
-.form_container.active .sign-up {
+.form_container.activeForm .sign-up {
     transform: translateX(100%);
     opacity: 1;
     z-index: 5;
@@ -214,7 +214,7 @@ body::-webkit-scrollbar {
     z-index: 1000;
 }
 
-.form_container.active .toggle-container {
+.form_container.activeForm .toggle-container {
     transform: translateX(-100%);
     border-radius: 0 150px 100px 0;
 }
@@ -233,7 +233,7 @@ body::-webkit-scrollbar {
     transition: all 0.6s ease-in-out;
 }
 
-.form_container.active .toggle {
+.form_container.activeForm .toggle {
     transform: translateX(50%);
 }
 
@@ -256,7 +256,7 @@ body::-webkit-scrollbar {
     transform: translateX(-200%);
 }
 
-.form_container.active .toggle-left {
+.form_container.activeForm .toggle-left {
     transform: translateX(0);
 }
 
@@ -265,7 +265,7 @@ body::-webkit-scrollbar {
     transform: translateX(0);
 }
 
-.form_container.active .toggle-right {
+.form_container.activeForm .toggle-right {
     transform: translateX(200%);
 }
 .footer{
@@ -276,6 +276,15 @@ body::-webkit-scrollbar {
 
 
 
+@media only screen and (max-width:400px) {
+    .form_container form {
+       
+       padding-right: 0px;
+        width: 85vw;
+     
+    }
+    
+}
 
 
 @media only screen and (max-width: 600px){
@@ -290,9 +299,12 @@ body::-webkit-scrollbar {
         /* height:100%; */
     }
 
- .form_container form {
+
+
+   
+    .form_container form {
        
-       
+        /* padding-right: 0px; */
          width: 85vw;
          
         padding: 0 20px;
@@ -300,12 +312,13 @@ body::-webkit-scrollbar {
      }
 
     .form_container {
+      
         width: 95%;
-    }
+      }
 
 
     
-.form_container.active .sign-in {
+.form_container.activeForm .sign-in {
     transform: translateY(0%);
 }
 
@@ -317,7 +330,7 @@ body::-webkit-scrollbar {
     z-index: 1;
 }
 
-.form_container.active .sign-up {
+.form_container.activeForm .sign-up {
     transform: translateY(0%);
     opacity: 1;
     z-index: 5;
