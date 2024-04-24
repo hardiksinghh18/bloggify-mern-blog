@@ -66,14 +66,14 @@ const Navbar = () => {
 
         {isAuthenticated ? (
           <div>
-            <NavLink to={'/blogs'}  className="mx-2" activeclassname="active">Blogs</NavLink>
-            <NavLink to={'/newpost'}  className="mx-2  "  activeclassname="active"   ><span>New</span> <i className='bx bxs-pencil mx-1'></i></NavLink>
+            <NavLink to={'/blogs'}  className="mx-2" activeclassname="active-link">Blogs</NavLink>
+            <NavLink to={'/newpost'}  className="mx-2  "  activeclassname="active-link"   ><span>New</span> <i className='bx bxs-pencil mx-1'></i></NavLink>
           
 
           </div>
         ) : (<div>
-          <NavLink to={"/blogs"}  className="mx-2 " activeclassname="active">Blogs</NavLink>
-          <NavLink to={"/login"}  className="mx-2" activeclassname="active">Login</NavLink>
+          <NavLink to={"/blogs"}  className="mx-2 " activeclassname="active-link">Blogs</NavLink>
+          <NavLink to={"/login"}  className="mx-2" activeclassname="active-link">Login</NavLink>
         </div>
         )}
 
