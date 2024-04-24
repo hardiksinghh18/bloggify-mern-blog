@@ -34,7 +34,7 @@ body::-webkit-scrollbar {
   }
 
 
-.active-link{
+.active{
     color: rgb(255, 0, 106);
   font-weight: bold; 
   }
