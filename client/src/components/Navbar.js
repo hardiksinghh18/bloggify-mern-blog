@@ -62,18 +62,18 @@ const Navbar = () => {
 
       <nav className=" w-max py-3   px-3   border border-solid border-black rounded-full font-medium capitalize  items-center  flex text-xs
     fixed top-2 right-1/2 translate-x-1/2 bg-light/80 backdrop-blur-sm z-50  sm:py-3 sm:px-8 sm:text-[1rem] sm:my-1 ">
-        <NavLink to="/" activeClassName="active-link" className="mr-2">Home</NavLink>
+        <NavLink to="/" activeClassName="active" className="mr-2">Home</NavLink>
 
         {isAuthenticated ? (
           <div>
-            <NavLink to={'/blogs'}  className="mx-2" activeclassname="active-link">Blogs</NavLink>
-            <NavLink to={'/newpost'}  className="mx-2  "  activeclassname="active-link"   ><span>New</span> <i className='bx bxs-pencil mx-1'></i></NavLink>
+            <NavLink to={'/blogs'}  className="mx-2" activeclassname="active">Blogs</NavLink>
+            <NavLink to={'/newpost'}  className="mx-2  "  activeclassname="active"   ><span>New</span> <i className='bx bxs-pencil mx-1'></i></NavLink>
           
 
           </div>
         ) : (<div>
-          <NavLink to={"/blogs"}  className="mx-2 " activeclassname="active-link">Blogs</NavLink>
-          <NavLink to={"/login"}  className="mx-2" activeclassname="active-link">Login</NavLink>
+          <NavLink to={"/blogs"}  className="mx-2 " activeclassname="active">Blogs</NavLink>
+          <NavLink to={"/login"}  className="mx-2" activeclassname="active">Login</NavLink>
         </div>
         )}
 
