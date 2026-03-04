@@ -1,35 +1,31 @@
 import React, { useState } from 'react'
-import ReactQuill from 'react-quill'; // Import React Quill
-import 'react-quill/dist/quill.snow.css'; // Import Quill styles
-import axios from 'axios';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { toast } from 'react-toastify'
+import LoadingButton from '@mui/lab/LoadingButton';
+import { useEditBlogMutation } from '../features/blogs/blogsApiSlice';
 
-const EditBlog = ({ singleBlog, editable,setEditable, handleEdit }) => {
+const EditBlog = ({ singleBlog, editable, setEditable, handleEdit }) => {
     const [newTitle, setNewTitle] = useState(singleBlog?.title);
     const [newSummary, setNewSummary] = useState(singleBlog?.summary);
     const [newContent, setNewContent] = useState(singleBlog?.content);
 
+    const [editBlog, { isLoading: saveLoading }] = useEditBlogMutation();
 
-    const handleBlogUpdate=async(e)=>{
-            e.preventDefault();
-            const updatedData={
-                newTitle,newSummary,newContent,blogId:singleBlog._id
-            }
+    const handleBlogUpdate = async (e) => {
+        e.preventDefault();
+        const updatedData = {
+            newTitle, newSummary, newContent, blogId: singleBlog._id
+        }
 
-            try {
-                const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/editblog`, updatedData)
+        try {
+            await editBlog(updatedData).unwrap();
+            toast.success('Blog updated successfully !');
+            setEditable(false);
 
-              
-              toast.success('Blog updated successfully !')
-              setTimeout(() => {
-                window.location.reload()
-              }, 2000);
-              
-            } catch (error) {
-                console.log(error)
-            }
-
-            
+        } catch (error) {
+            console.log(error)
+        }
     }
 
 
@@ -79,7 +75,7 @@ const EditBlog = ({ singleBlog, editable,setEditable, handleEdit }) => {
                             />
                         </div>
 
-                        <button type="submit"    className="bg-blue-500 text-white px-4 py-2 rounded-md btn hover:bg-blue-600 transition duration-300">Save Changes</button>
+                        <LoadingButton loading={saveLoading} type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md btn hover:bg-blue-600 transition duration-300">Save Changes</LoadingButton>
                         <button onClick={handleEdit} className="ml-4 text-black-500 hover:underline">Cancel</button>
                     </form>
                 </div>

@@ -4,12 +4,9 @@ const BlogLoadingSkeleton = () => {
     return (
         <div>
             <div>
-
                 <div>
                     <div className="px-4 lg:px-64 py-4 lg:py-8 flex flex-col items-center justify-center w-full animate-pulse">
-
-                        <div><h2 className="lg:my-2 sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gray-300 w-3/4 h-8 rounded mb-4"></h2></div>
-
+                        <div><div className="lg:my-2 sm:text-2xl md:text-3xl lg:text-4xl font-bold bg-gray-300 w-3/4 h-8 rounded mb-4"></div></div>
                         <div className="flex justify-between w-full items-center">
                             <div className="flex my-8  justify-start gap-2 items-center">
                                 <div className="h-10 sm:h-12 rounded-full bg-gray-300 w-10 sm:w-12 mr-2"></div>
@@ -44,13 +41,11 @@ const BlogLoadingSkeleton = () => {
                     </div>
 
                     <div id="comments" className="comment_section w-full px-4 lg:px-64 my-8 ">
-                        <h1 className="font-bold text-sm sm:text-lg lg:text-xl bg-gray-300 w-24 h-6 rounded mb-4"></h1>
+                        <div className="font-bold text-sm sm:text-lg lg:text-xl bg-gray-300 w-24 h-6 rounded mb-4"></div>
                         <div className="bg-gray-300 w-full h-96 rounded"></div>
                     </div>
                 </div>
-
             </div>
-
         </div>
     )
 }

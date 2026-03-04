@@ -1,31 +1,39 @@
-import React, { useEffect, useState } from 'react'
-import { useAuthContext } from '../context/userContext'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import axios from 'axios'
 import defaultProfile from '../images/defaultProfile.jpg'
-import { useBlogContext } from '../context/BlogContext'
 import BlogLayoutfour from '../components/Blog/BlogLayoutFour'
 import ProfilePictureEditor from '../components/ProfilePictureEditor'
 import { toast } from 'react-toastify'
 import LoadingSkeleton from '../components/LoadingSkeletons/LoadingSkeleton'
+import LoadingButton from '@mui/lab/LoadingButton';
+import { useSelector, useDispatch } from 'react-redux'
+import { selectUserInfo, setAuthenticated } from '../features/auth/authSlice'
+import { useGetDashboardQuery } from '../features/blogs/blogsApiSlice'
+import { useCheckProfileAuthQuery, useGetUserProfileMutation, useUpdateBioMutation } from '../features/user/userApiSlice'
 
 const UserProfile = () => {
 
-  const { userInfo, setUserInfo, isAuthenticated, setIsAuthenticated } = useAuthContext()
+  const dispatch = useDispatch();
+  const userInfo = useSelector(selectUserInfo);
   const [userProfile, setUserProfile] = useState('')
   const [newBio, setNewBio] = useState('')
   const [newName, setNewName] = useState('')
   const [saved, setSaved] = useState(false)
   const [editable, setEditable] = useState(false)
-  const { blogsData } = useBlogContext()
   const [loading, setLoading] = useState(true)
 
   const navigate = useNavigate()
-  axios.defaults.withCredentials = true;         //used for accessing tokens
   const userId = useParams()
   const [isOpen, setIsOpen] = useState(false);
 
-  const profileImageUrl = userProfile?.profileImage? userProfile?.profileImage: defaultProfile;
+  const { data: authData, isSuccess: authSuccess } = useCheckProfileAuthQuery();
+  const { data: dashboardData } = useGetDashboardQuery();
+  const [getUserProfile] = useGetUserProfileMutation();
+  const [updateBio, { isLoading: saveLoading }] = useUpdateBioMutation();
+
+  const blogsData = dashboardData?.allBlogs;
+
+  const profileImageUrl = userProfile?.profileImage ? userProfile?.profileImage : defaultProfile;
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
@@ -44,7 +52,6 @@ const UserProfile = () => {
   const handleBio = (e) => {
     e.preventDefault()
     setNewBio(e.target.value)
-    // console.log(newName)
   }
   const handleCancel = () => {
     setNewName(userProfile?.name)
@@ -53,69 +60,50 @@ const UserProfile = () => {
   }
 
   const updateUserProfile = async (e) => {
-    // e.preventDefault();
-
     const newData = {
       newName: newName ? newName : userProfile?.name,
       newBio: newBio ? newBio : userProfile?.bio
     }
 
     try {
-      const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/updatebio`, newData)
+      await updateBio(newData).unwrap();
       setEditable(false)
       toast.success('Profile updated successfully !')
       setSaved(!saved)
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const fetchData = async () => {
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/profile`)
-
-      if (res?.data?.valid) {
-        setIsAuthenticated(res?.data?.valid)
-      } else {
-        navigate('/login')
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-
-
-
-  const fetchUserDetails = async () => {
-
-    try {
-      const userData = await axios.post(`${process.env.REACT_APP_BASE_URL}/profile`, userId)
-      setUserProfile(userData?.data);
-      setNewName(userData?.data?.name);
-      setNewBio(userData?.data?.bio);
-
-      setLoading(false)
     } catch (error) {
       console.log(error)
     }
   }
 
   useEffect(() => {
-    fetchData()
+    if (authSuccess) {
+      if (authData?.valid) {
+        dispatch(setAuthenticated(true));
+      } else {
+        navigate('/login');
+      }
+    }
+  }, [authSuccess, authData, dispatch, navigate]);
+
+  const fetchUserDetails = useCallback(async () => {
+    try {
+      const userData = await getUserProfile(userId).unwrap();
+      setUserProfile(userData);
+      setNewName(userData?.name);
+      setNewBio(userData?.bio);
+      setLoading(false)
+    } catch (error) {
+      console.log(error)
+    }
+  }, [getUserProfile, userId])
+
+  useEffect(() => {
     fetchUserDetails()
-  }, [saved,isOpen])
-
-
+  }, [saved, isOpen, fetchUserDetails])
 
   const userBlogs = blogsData?.filter((blog) => {
     return blog?.author?._id === userProfile?._id
   })
-
-  // console.log(userBlogs?.length)
-
-
 
   if (loading) {
     return (
@@ -124,10 +112,7 @@ const UserProfile = () => {
   }
 
   return (
-
     <>
-
-
       <div className=" mx-auto w-screen flex justify-center   lg:px-16">
         <div className=" rounded-lg  py-6  flex flex-col items-center justify-center  w-[90vw] gap-2 lg:items-start  lg:justify-between lg:flex-row">
           <div className=' relative shadow-md h-fit py-4 px-4 flex flex-col items-start w-[20rem]  lg:w-96 rounded-lg'>
@@ -161,13 +146,8 @@ const UserProfile = () => {
                 )}
 
               </div>
-
-
-
-
             </div>
             <div>
-
               {isOpen && <div className="fixed inset-0 flex items-center justify-center z-50">
                 <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
                 <div className=" relative bg-white rounded-lg pb-8 lg:p-8  z-50 max-w-[80vw]  lg:w-80 ">
@@ -175,8 +155,6 @@ const UserProfile = () => {
                   <ProfilePictureEditor profileImageUrl={profileImageUrl} toggleModal={toggleModal} isOpen={isOpen} setIsOpen={setIsOpen} />
                 </div>
               </div>
-
-
               }
             </div>
             <div className='my-6'>
@@ -193,13 +171,9 @@ const UserProfile = () => {
 
             {(userInfo?._id === userId?.id && !editable) ? (
               <button className='btn text-[0.6rem] py-2 px-4 rounded-lg font-semibold w-full' onClick={handleEdit} >Edit Profile</button>
-
             ) : ('')}
-
-
-
             {editable && <div className='flex gap-2 w-full justify-center items-center'>
-              <button className='btn text-[0.6rem] py-2 px-4 rounded-lg font-semibold' onClick={updateUserProfile} >Save Changes</button>
+              <LoadingButton loading={saveLoading} className='btn text-[0.6rem] py-2 px-4 rounded-lg font-semibold' onClick={updateUserProfile} >Save Changes</LoadingButton>
               <button className='btn text-[0.6rem] py-2 px-4 rounded-lg font-semibold' onClick={handleCancel} >Cancel</button>
             </div>
             }
@@ -208,7 +182,6 @@ const UserProfile = () => {
           {(userBlogs && userBlogs?.length !== 0) ? (
             <div className=" lg:px-8  flex flex-col  mt-4 items-center sm:items-start  lg:w-[65vw] ">
               <h3 className="text-sm sm:text-lg font-semibold mt-4 sm:mt-0 sm:mb-4 ml-4"> Blogs</h3>
-
               {userBlogs && userBlogs?.map((blog, index) => {
                 return (
                   <div key={blog?._id} className='flex w-screen justify-center sm:justify-start '>
@@ -218,15 +191,10 @@ const UserProfile = () => {
                   </div>
                 )
               })}
-
             </div>
           ) : (
-
             <div className=' lg:px-8  flex flex-col  items-start   w-4/5'>No Blogs posted yet</div>
-
-
           )}
-
         </div>
       </div>
     </>

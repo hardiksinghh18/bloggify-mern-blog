@@ -1,10 +1,8 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 const BlogLayoutTwo = ({ blog }) => {
     const date = new Date(blog?.createdAt)
     const formattedDate = date.toDateString();
-    // blog&&console.log(date)
     return (
         <div>
             <div className=" flex gap-4 items-center text-dark dark:text-light">
@@ -26,15 +24,11 @@ const BlogLayoutTwo = ({ blog }) => {
                                 {blog?.title}
                             </span>
                         </h2>
-                     
-
                     </a>
                        <div>
                        <a href={`/profile/${blog?.author?._id}/${blog?.author?.name}`} className='text-xs font-semibold'>Author : {blog?.author?.name}</a>
                         {blog && <p className='text-xs '>{formattedDate}</p>}
-
                        </div>
-
                 </div>
             </div>
         </div>

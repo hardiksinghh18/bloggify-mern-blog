@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
 import 'boxicons'
 import Logo from '../images/Logo.png'
 import defaultProfile from '../images/defaultProfile.jpg'
 
-
-import { useNavigate, Link, NavLink } from 'react-router-dom'
-import { useAuthContext } from '../context/userContext'
+import { useNavigate, NavLink } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectIsAuthenticated, selectUserInfo, logout as logoutAction, setCredentials } from '../features/auth/authSlice'
+import { useLogoutMutation } from '../features/auth/authApiSlice'
+import { useGetDashboardQuery } from '../features/blogs/blogsApiSlice'
+import { apiSlice } from '../features/api/apiSlice'
 import { useThemeSwitch } from '../hooks/useThemeSwitch'
 import { toast } from 'react-toastify';
 import { MdLightMode } from "react-icons/md";
@@ -14,16 +16,25 @@ import { MdDarkMode } from "react-icons/md";
 
 
 const Navbar = () => {
-  const { userInfo, setUserInfo, isAuthenticated, setIsAuthenticated } = useAuthContext()
+  const dispatch = useDispatch();
+  const userInfo = useSelector(selectUserInfo);
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const navigate = useNavigate()
-  const [userDetails, setUserDetails] = useState()
-  const [mode, setMode] = useThemeSwitch();
-  const [click, setClick] = useState(false);
+  useThemeSwitch();
+  const [logoutApi] = useLogoutMutation();
+
+  // Fetch dashboard data to populate auth state (uses RTK Query cache — no duplicate calls)
+  const { data: dashboardData, isSuccess } = useGetDashboardQuery();
+
+  useEffect(() => {
+    if (isSuccess && dashboardData?.valid) {
+      dispatch(setCredentials({ user: dashboardData.user, valid: dashboardData.valid }));
+    }
+  }, [isSuccess, dashboardData, dispatch]);
 
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem("theme") || "dark";
   });
-
   // Toggle theme between light and dark
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
@@ -36,34 +47,23 @@ const Navbar = () => {
     // Set default theme on page load
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
-  const handleLogout = () => {
+
+  const handleLogout = async () => {
     const confirmLogout = window.confirm('Are you sure you want to log out?');
     if (confirmLogout) {
-
-      axios.defaults.withCredentials = true;
-      axios.post(`${process.env.REACT_APP_BASE_URL}/logout`, {}, { withCredentials: true })
-
-        .then(res => {
-          if (!res.data.valid) {
-
-            toast.success('Logout Successful')
-            setIsAuthenticated(false)
-            setUserInfo('')
-            navigate('/')
-          }
-        }).catch(err => console.log(err))
+      try {
+        const res = await logoutApi().unwrap();
+        if (!res.valid) {
+          toast.success('Logout Successful')
+          dispatch(logoutAction());
+          dispatch(apiSlice.util.resetApiState()); // Clear RTK Query cache
+          navigate('/')
+        }
+      } catch (err) {
+        console.log(err)
+      }
     }
-
-
   }
-
-  // console.log(userInfo)
-
-
-  const toggle = () => {
-    setClick(!click)
-  }
-
 
   const profileImage = userInfo?.profileImage ? userInfo?.profileImage : defaultProfile
 
@@ -74,9 +74,6 @@ const Navbar = () => {
       <a href='/'>
         <img className='h-12 w-12' src={Logo} alt="" />
       </a>
-
-
-
 
 
       <nav className=" w-max py-3   px-3   border border-solid border-black rounded-full font-medium capitalize  items-center  flex text-xs
