@@ -1,30 +1,23 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useAuthContext } from '../context/userContext';
+import { useSelector } from 'react-redux';
+import { selectUserInfo } from '../features/auth/authSlice';
+import { useGetCommentsQuery, useAddCommentMutation, useDeleteCommentMutation } from '../features/comments/commentsApiSlice';
 import defaultProfile from '../images/defaultProfile.jpg'
+import LoadingButton from '@mui/lab/LoadingButton';
+
 const CommentSection = ({ singleBlogId }) => {
-    const { userInfo } = useAuthContext()
- 
+    const userInfo = useSelector(selectUserInfo);
+
     const [newComment, setNewComment] = useState('');
-    const [allComments, setAllComments] = useState([])
-    const [load, setLoad] = useState(true)
 
-    const getComments = async () => {
-        const comments = await axios.get(`${process.env.REACT_APP_BASE_URL}/comment`)
-
-        setAllComments(comments?.data);
-    }
+    const { data: allComments = [] } = useGetCommentsQuery();
+    const [addComment, { isLoading: commentLoading }] = useAddCommentMutation();
+    const [deleteCommentApi] = useDeleteCommentMutation();
 
     const blogComments = allComments?.filter((item) => {
-
         return item.blogId === singleBlogId
     })
-
-
-    useEffect(() => {
-        getComments();
-    }, [load])
 
 
     const handleCommentSubmit = async (e) => {
@@ -32,23 +25,19 @@ const CommentSection = ({ singleBlogId }) => {
         if (newComment.trim() === '') return;
 
         try {
-            const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/comment`, { newComment, singleBlogId })
+            await addComment({ newComment, singleBlogId }).unwrap();
             toast.success('Comment added successfully.')
-
             setNewComment('');
-
         } catch (error) {
             console.log(error)
         }
-        setLoad(!load)
     };
 
 
     const deleteComment = async (deleteCommentId) => {
         try {
-            const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/deletecomment`, { deleteCommentId })
+            await deleteCommentApi({ deleteCommentId }).unwrap();
             toast.success('Comment deleted successfully.')
-            setLoad(!load)
         } catch (error) {
             console.log(error)
         }
@@ -64,12 +53,13 @@ const CommentSection = ({ singleBlogId }) => {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                 />
-                <button
+                <LoadingButton
+                    loading={commentLoading}
                     className="bg-blue-500 text-white px-4 py-2 rounded-md  btn text-xs"
                     type="submit"
                 >
                     Post Comment
-                </button>
+                </LoadingButton>
             </form>
 
             {/* Display comments */}
@@ -93,9 +83,9 @@ const CommentSection = ({ singleBlogId }) => {
                             <div className="flex flex-col items-start mt-2  mx-0">
                                 <a href={`/profile/${comment?.userId?._id}/${comment?.userId?.name}`} className=" text-xs ">{comment?.username}</a>
 
-                              <p className=" text-sm flex  font-semibold  ">{comment?.commentDesc}</p>
+                                <p className=" text-sm flex  font-semibold  ">{comment?.commentDesc}</p>
 
-                            {(userInfo?._id === comment?.userId?._id)? (<button onClick={() => deleteComment(comment?._id)} className='text-xs  mt-2 '>Delete</button>) : ('')}
+                                {(userInfo?._id === comment?.userId?._id) ? (<button onClick={() => deleteComment(comment?._id)} className='text-xs  mt-2 '>Delete</button>) : ('')}
                             </div>
 
 
@@ -111,5 +101,3 @@ const CommentSection = ({ singleBlogId }) => {
 };
 
 export default CommentSection;
-
-

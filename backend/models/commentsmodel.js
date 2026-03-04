@@ -23,7 +23,5 @@ const commentSchema = new Schema({
     timestamps:true
 })
 
-
 const  Comment =new model("Comment",commentSchema)
-
 module.exports=Comment;

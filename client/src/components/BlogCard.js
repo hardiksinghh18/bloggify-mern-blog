@@ -18,7 +18,6 @@ const BlogCard = ({ blog }) => {
                     <a href={`blogs/${_id}`} className="text-blue-500 hover:text-blue-700">Read more</a>
                 </div>
             </div>
-
         </>
     )
 }

@@ -1,49 +1,28 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import ReactQuill from 'react-quill'; // Import React Quill
-import 'react-quill/dist/quill.snow.css'; // Import Quill styles
-import Navbar from '../components/Navbar'
-import { useAuthContext } from '../context/userContext'
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { useCheckNewPostAuthQuery, useCreatePostMutation } from '../features/blogs/blogsApiSlice';
 
 const CreatePost = () => {
 
   const navigate = useNavigate()
-  // const{userInfo,setUserInfo,isAuthenticated}=useAuthContext()
-  const [isAuthenticated, setIsAuthenticated] = useState()
-  const [userDetails, setUserDetails] = useState()
   const [title, setTitle] = useState('');
   const [summary, setSummary] = useState('');
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
 
-  axios.defaults.withCredentials = true;
+  const { data: authData, isSuccess: authSuccess } = useCheckNewPostAuthQuery();
+  const [createPost, { isLoading: submitLoading }] = useCreatePostMutation();
 
-
-  const fetchData = async () => {
-
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/newpost`)
-
-      if (res?.data?.valid) {
-
-        setIsAuthenticated(res?.data?.valid)
-
-      } else {
-        navigate('/login')
-
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
   useEffect(() => {
-
-    fetchData()
-
-  }, [])
+    if (authSuccess && !authData?.valid) {
+      navigate('/login');
+    }
+  }, [authSuccess, authData, navigate]);
 
 
   const handleTitle = (e) => {
@@ -68,15 +47,14 @@ const CreatePost = () => {
     formData.append('title', title);
     formData.append('summary', summary);
     formData.append('content', content);
-    // console.log(file)
+
     try {
-      const res = await axios.post(`${process.env.REACT_APP_BASE_URL}/newpost`, formData)
-      if (res?.data?.valid) {
+      const res = await createPost(formData).unwrap();
+      if (res?.valid) {
         toast.success('Posted new Blog successfully.')
       } else {
         toast.error('Please fill all the required fields')
       }
-      // console.log(res.data)
     } catch (error) {
       toast.error('Please fill all the fields')
       console.log(error)
@@ -138,13 +116,12 @@ const CreatePost = () => {
                 type="file"
                 id="file"
                 name="file"
-                // accept="file/*"
                 required
                 onChange={handleFile}
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:border-blue-500"
               />
             </div>
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">Submit</button>
+            <LoadingButton loading={submitLoading} type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition duration-300">Submit</LoadingButton>
             <Link to="/" className="ml-4 text-blue-500 hover:underline">Cancel</Link>
           </form>
         </div>

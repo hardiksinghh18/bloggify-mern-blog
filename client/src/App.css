@@ -205,6 +205,21 @@ input, textarea, select, .ql-container {
     background-color: var(--button-hover-bg);
 }
 
+/* MUI LoadingButton reset — lets existing CSS control the look */
+button.MuiLoadingButton-root {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    text-transform: inherit;
+    letter-spacing: inherit;
+    line-height: inherit;
+    min-width: auto;
+    box-shadow: none;
+}
+button.MuiLoadingButton-root:hover {
+    box-shadow: none;
+}
+
 .form_container button.hiddennew {
     background-color: transparent;
     border-color: var(--text-color);

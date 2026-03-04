@@ -1,8 +1,6 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-import axios from 'axios'
-// import { Toast } from 'react-toastify/dist/components'
 import { toast } from 'react-toastify'
+import { useDeleteBlogMutation } from '../../features/blogs/blogsApiSlice'
 
 
 const BlogLayoutfour = (props) => {
@@ -11,22 +9,19 @@ const BlogLayoutfour = (props) => {
     const date = new Date(blog?.createdAt)
     const formattedDate = date.toDateString();
 
+    const [deleteBlogApi] = useDeleteBlogMutation();
 
-    const deleteBlog = (blogId) => {
+    const deleteBlog = async (blogId) => {
         const confirm = window.confirm('Delete this Blog permanently ?')
         if (confirm) {
-
-            const res = axios.post(`${process.env.REACT_APP_BASE_URL}/deleteblog`, { blogId })
-            toast.success('Blog deleted successfully')
+            try {
+                await deleteBlogApi({ blogId }).unwrap();
+                toast.success('Blog deleted successfully')
+            } catch (error) {
+                console.log(error)
+            }
         }
-        setTimeout(() => {
-            window.location.reload();
-        }, 3000);
-
-
     }
-
-    
 
     return (
         <>
@@ -52,27 +47,23 @@ const BlogLayoutfour = (props) => {
                                 {blog?.title}
                             </span>
                         </h2>
-                      <div className='hidden sm:flex flex-col'>
-                      <p className='text-[0.65rem] sm:text-xs'>Author : {blog?.author?.name}</p>
-                        {blog && <p className='text-[0.65rem] sm:text-xs'>{formattedDate}</p>}
+                        <div className='hidden sm:flex flex-col'>
+                            <p className='text-[0.65rem] sm:text-xs'>Author : {blog?.author?.name}</p>
+                            {blog && <p className='text-[0.65rem] sm:text-xs'>{formattedDate}</p>}
 
-                      </div>
+                        </div>
 
                     </a>
 
                 </div>
 
-
-                {(userInfo?._id === userId?.id)?(
-                <div className='h-full flex  items-start'>
-                    <button onClick={() => deleteBlog(blog?._id)}> <i className='bx bxs-trash-alt'></i></button>
-                </div>
-                   ):('')}
+                {(userInfo?._id === userId?.id) ? (
+                    <div className='h-full flex  items-start'>
+                        <button onClick={() => deleteBlog(blog?._id)}> <i className='bx bxs-trash-alt'></i></button>
+                    </div>
+                ) : ('')}
 
             </div>
-
-
-
         </>
     )
 }

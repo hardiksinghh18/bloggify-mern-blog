@@ -1,59 +1,49 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useBlogContext } from '../context/BlogContext'
-import Navbar from '../components/Navbar'
-import axios from 'axios'
 import defaultProfile from '../images/defaultProfile.jpg'
-import { useAuthContext } from '../context/userContext'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectUserInfo, setAuthenticated } from '../features/auth/authSlice'
+import { useGetDashboardQuery, useCheckSingleBlogAuthQuery, useIncrementViewsMutation } from '../features/blogs/blogsApiSlice'
 import CommentSection from '../components/CommentSection'
 import EditBlog from '../components/EditBlog'
-import LoadingSkeleton from '../components/LoadingSkeletons/LoadingSkeleton'
 import BlogLoadingSkeleton from '../components/LoadingSkeletons/BlogLoadingSkeleton'
 
 const SingleBlog = () => {
-  axios.defaults.withCredentials = true;
-  const { userInfo, isAuthenticated, setIsAuthenticated } = useAuthContext();
-  const [blogDetail, setBlogDetail] = useState();
-  const { blogsData } = useBlogContext();
+  const dispatch = useDispatch();
+  const userInfo = useSelector(selectUserInfo);
   const navigate = useNavigate();
   const { id } = useParams();
   const [editable, setEditable] = useState(false);
-  const [loading, setLoading] = useState(true);
+
+  const { data: authData, isSuccess: authSuccess, isLoading: authLoading } = useCheckSingleBlogAuthQuery();
+  const { data: dashboardData, isLoading: blogsLoading } = useGetDashboardQuery();
+  const [incrementViews] = useIncrementViewsMutation();
 
   const handleEdit = () => {
     setEditable(!editable);
   };
 
-  const singleBlogDetail =
-    blogsData && blogsData.filter((blog) => blog._id === id);
-
-  const fetchData = async () => {
-    try {
-      const res = await axios.get(`${process.env.REACT_APP_BASE_URL}/singleblog`);
-
-      if (res?.data?.valid) {
-        setIsAuthenticated(res?.data?.valid);
+  useEffect(() => {
+    if (authSuccess) {
+      if (authData?.valid) {
+        dispatch(setAuthenticated(true));
       } else {
         navigate('/login');
       }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
     }
-  };
-
-  const increaseViewCount = async () => {
-    await axios.post(`${process.env.REACT_APP_BASE_URL}/views`, { id });
-  };
+  }, [authSuccess, authData, dispatch, navigate]);
 
   useEffect(() => {
-    fetchData();
-    increaseViewCount();
-  }, []);
+    if (id) {
+      incrementViews({ id });
+    }
+  }, [id, incrementViews]);
+
+  const blogsData = dashboardData?.allBlogs;
+  const singleBlogDetail = blogsData?.filter((blog) => blog._id === id);
 
   // Show loading skeleton while loading
-  if (loading || !singleBlogDetail || singleBlogDetail.length === 0) {
+  if (authLoading || blogsLoading || !singleBlogDetail || singleBlogDetail.length === 0) {
     return <BlogLoadingSkeleton />;
   }
 

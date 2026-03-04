@@ -1,9 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 
 const BlogLayoutOne = ({ blog }) => {
     return (
-
         <div className="group relative inline-block overflow-hidden rounded-xl">
             <div className="relative top-0 left-0 bottom-0 right-0 h-full bg-gradient-to-b from-transparent to-dark/90 rounded-xl z-10"></div>
 
@@ -24,7 +22,6 @@ const BlogLayoutOne = ({ blog }) => {
             </div>
                 </a>
         </div>
-
     )
 }
 
