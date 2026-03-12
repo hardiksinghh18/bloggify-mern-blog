@@ -1,37 +1,35 @@
 import React from 'react'
+import defaultProfile from '../../images/defaultProfile.jpg'
 
 const BlogLayoutTwo = ({ blog }) => {
     const date = new Date(blog?.createdAt)
-    const formattedDate = date.toDateString();
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    const formattedDate = blog?.createdAt ? date.toLocaleDateString('en-US', options) : '';
+    const profileImageUrl = blog?.author?.profileImage || defaultProfile;
+
     return (
-        <div>
-            <div className=" flex gap-4 items-center text-dark dark:text-light">
-                <a
-                    href={`blogs/${blog?._id}/${blog?.title}`}
-                    className=" col-span-12  lg:col-span-4 h-full rounded-xl overflow-hidden"
-                >
-                    <img className=" aspect-square h-18 w-24 sm:h-28 sm:w-40 object-cover object-center group-hover:scale-105 transition-all ease duration-300" src={blog?.coverImage} alt="" />
-                </a>
+        <a href={`/blogs/${blog?._id}/${blog?.title}`} className="group flex gap-5 items-start p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200">
+            <div className="shrink-0 w-[120px] h-[90px] sm:w-[140px] sm:h-[100px] rounded-xl overflow-hidden">
+                <img
+                    className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"
+                    src={blog?.coverImage}
+                    alt={blog?.title}
+                />
+            </div>
 
-                <div className="col-span-12  lg:col-span-8 w-full  ">
+            <div className="flex flex-col justify-between flex-1 min-h-[90px] sm:min-h-[100px]">
+                <h2 className="font-bold text-sm sm:text-[17px] leading-snug line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200">
+                    {blog?.title}
+                </h2>
 
-                    <a href={`blogs/${blog?._id}/${blog?.title}`} className="inline-block my-1">
-                        <h2 className="font-semibold capitalize  text-xs sm:text-lg">
-                            <span
-                                className="bg-gradient-to-r from-accent/50 dark:from-accentDark/50 to-accent/50 dark:to-accentDark/50 bg-[length:0px_6px]
-                           group-hover:bg-[length:100%_6px] bg-left-bottom bg-no-repeat transition-[background-size] duration-500  "
-                            >
-                                {blog?.title}
-                            </span>
-                        </h2>
-                    </a>
-                       <div>
-                       <a href={`/profile/${blog?.author?._id}/${blog?.author?.name}`} className='text-xs font-semibold'>Author : {blog?.author?.name}</a>
-                        {blog && <p className='text-xs '>{formattedDate}</p>}
-                       </div>
+                <div className="flex items-center gap-2 mt-2">
+                    <img src={profileImageUrl} alt={blog?.author?.name} className="w-5 h-5 rounded-full object-cover" />
+                    <span className="text-xs font-medium opacity-70">{blog?.author?.name}</span>
+                    <span className="text-xs opacity-50">·</span>
+                    <span className="text-xs opacity-50">{formattedDate}</span>
                 </div>
             </div>
-        </div>
+        </a>
     )
 }
 

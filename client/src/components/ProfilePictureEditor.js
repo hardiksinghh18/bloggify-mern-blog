@@ -4,7 +4,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import { useUploadProfileImageMutation } from '../features/user/userApiSlice';
 
 const ProfilePictureEditor = (props) => {
-  const { profileImageUrl, isOpen, setIsOpen, saved, setSaved } = props
+  const { profileImageUrl, isOpen, setIsOpen } = props
   const [image, setImage] = useState(profileImageUrl);
   const [editor, setEditor] = useState(null);
 
@@ -23,7 +23,6 @@ const ProfilePictureEditor = (props) => {
         await uploadProfileImage(formData).unwrap();
 
         setIsOpen(!isOpen)
-        setSaved(!saved)
       }
     } catch (error) {
       console.error(error);
