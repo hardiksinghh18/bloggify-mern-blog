@@ -7,6 +7,8 @@ interface Blog {
     content: string;
     coverImage: string;
     views: number;
+    likes?: string[];
+    dislikes?: string[];
     createdAt: string;
     author: {
         _id: string;
@@ -14,6 +16,15 @@ interface Blog {
         email: string;
         profileImage?: string;
     };
+}
+
+interface TrendingBlog extends Blog {
+    trendingScore: number;
+    commentsCount: number;
+}
+
+interface TrendingBlogsResponse {
+    trendingBlogs: TrendingBlog[];
 }
 
 interface DashboardResponse {
@@ -53,6 +64,22 @@ export const blogsApiSlice = apiSlice.injectEndpoints({
                         'Auth',
                     ]
                     : [{ type: 'Blog', id: 'LIST' }, 'Auth'],
+        }),
+
+        getPublicBlogs: builder.query<{ allBlogs: Blog[] }, void>({
+            query: () => '/blogs',
+            providesTags: (result) =>
+                result?.allBlogs
+                    ? [
+                        ...result.allBlogs.map(({ _id }) => ({ type: 'Blog' as const, id: _id })),
+                        { type: 'Blog', id: 'LIST' },
+                    ]
+                    : [{ type: 'Blog', id: 'LIST' }],
+        }),
+
+        getTrendingBlogs: builder.query<TrendingBlogsResponse, number | void>({
+            query: (limit) => `/trending${limit ? `?limit=${limit}` : ''}`,
+            providesTags: [{ type: 'Blog', id: 'LIST' }],
         }),
 
         checkNewPostAuth: builder.query<AuthCheckResponse, void>({
@@ -100,15 +127,37 @@ export const blogsApiSlice = apiSlice.injectEndpoints({
                 body: { id },
             }),
         }),
+
+        likeBlog: builder.mutation<{ message: string, likes: string[], dislikes: string[] }, { blogId: string }>({
+            query: ({ blogId }) => ({
+                url: '/likeblog',
+                method: 'POST',
+                body: { blogId },
+            }),
+            invalidatesTags: ['Blog'],
+        }),
+
+        dislikeBlog: builder.mutation<{ message: string, likes: string[], dislikes: string[] }, { blogId: string }>({
+            query: ({ blogId }) => ({
+                url: '/dislikeblog',
+                method: 'POST',
+                body: { blogId },
+            }),
+            invalidatesTags: ['Blog'],
+        }),
     }),
 });
 
 export const {
     useGetDashboardQuery,
+    useGetPublicBlogsQuery,
+    useGetTrendingBlogsQuery,
     useCheckNewPostAuthQuery,
     useCheckSingleBlogAuthQuery,
     useCreatePostMutation,
     useEditBlogMutation,
     useDeleteBlogMutation,
     useIncrementViewsMutation,
+    useLikeBlogMutation,
+    useDislikeBlogMutation,
 } = blogsApiSlice;

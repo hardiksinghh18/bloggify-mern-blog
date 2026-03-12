@@ -121,6 +121,62 @@ app.get('/dashboard', verifyuser, async (req, res) => {
     }
 })
 
+// Public route - no auth required, allows anyone to read blogs
+app.get('/blogs', async (req, res) => {
+    try {
+        const allBlogs = await Blog.find({}).populate('author').sort({ createdAt: -1 })
+        return res.json({ allBlogs })
+    } catch (error) {
+        console.log('error in public blogs', error)
+        return res.status(500).json({ message: 'Internal server error' })
+    }
+})
+
+// Trending blogs endpoint - ranks blogs by engagement score with time decay
+app.get('/trending', async (req, res) => {
+    try {
+        // Get comment counts per blog
+        const commentCounts = await Comment.aggregate([
+            { $match: { parentCommentId: null } }, // Only count top-level comments
+            { $group: { _id: '$blogId', count: { $sum: 1 } } }
+        ]);
+        const commentMap = {};
+        commentCounts.forEach(c => { commentMap[c._id.toString()] = c.count; });
+
+        // Get all blogs
+        const allBlogs = await Blog.find({}).populate('author').lean();
+
+        const now = new Date();
+
+        // Calculate trending score for each blog
+        const scored = allBlogs?.map(blog => {
+            const views = blog.views || 0;
+            const likesCount = (blog.likes || []).length;
+            const commentsCount = commentMap[blog._id.toString()] || 0;
+
+            // Time decay: hours since creation
+            const hoursAge = (now - new Date(blog.createdAt)) / (1000 * 60 * 60);
+            const decay = Math.pow((hoursAge / 24) + 1, 0.5); // sqrt decay
+
+            // Weighted score: likes matter most, then comments, then views
+            const rawScore = (views * 1) + (likesCount * 3) + (commentsCount * 2);
+            const trendingScore = rawScore / decay;
+
+            return { ...blog, trendingScore, commentsCount };
+        });
+
+        // Sort by trending score descending, take top results
+        const limit = parseInt(req.query.limit) || 5;
+        scored.sort((a, b) => b.trendingScore - a.trendingScore);
+        const trending = scored.slice(0, limit);
+
+        return res.json({ trendingBlogs: trending });
+    } catch (error) {
+        console.log('error in trending', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 app.get('/newpost', verifyuser, async (req, res) => {
     try {
         return res.json({ valid: true, message: "authorized" })
@@ -172,13 +228,71 @@ app.post('/editblog', verifyuser, async (req, res) => {
 })
 
 app.post('/views', async (req, res) => {
-    const { id } = req.body
-    const findBlog = await Blog.findOne({ _id: id })
-    findBlog.views += 1;
-    await findBlog.save()
+    try {
+        const { id } = req.body;
+        await Blog.updateOne({ _id: id }, { $inc: { views: 1 } });
+        return res.json({ message: 'Updated view count' });
+    } catch (error) {
+        console.log('error in views', error);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
-    return res.json({ message: 'Updated view count' })
-})
+app.post('/likeblog', verifyuser, async (req, res) => {
+    try {
+        const { blogId } = req.body;
+        const userEmail = req.email;
+        const userDetails = await Register.findOne({ email: userEmail });
+        const userId = userDetails._id;
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+        // Check if user already liked
+        const hasLiked = blog.likes.includes(userId);
+
+        if (hasLiked) {
+            blog.likes.pull(userId); // Unlike
+        } else {
+            blog.likes.push(userId); // Like
+            blog.dislikes.pull(userId); // Remove dislike if existed
+        }
+
+        await blog.save();
+        return res.json({ message: 'Blog like status updated', likes: blog.likes, dislikes: blog.dislikes });
+    } catch (error) {
+        console.log('error in likeblog', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+app.post('/dislikeblog', verifyuser, async (req, res) => {
+    try {
+        const { blogId } = req.body;
+        const userEmail = req.email;
+        const userDetails = await Register.findOne({ email: userEmail });
+        const userId = userDetails._id;
+
+        const blog = await Blog.findById(blogId);
+        if (!blog) return res.status(404).json({ message: 'Blog not found' });
+
+        // Check if user already disliked
+        const hasDisliked = blog.dislikes.includes(userId);
+
+        if (hasDisliked) {
+            blog.dislikes.pull(userId); // Undislike
+        } else {
+            blog.dislikes.push(userId); // Dislike
+            blog.likes.pull(userId); // Remove like if existed
+        }
+
+        await blog.save();
+        return res.json({ message: 'Blog dislike status updated', likes: blog.likes, dislikes: blog.dislikes });
+    } catch (error) {
+        console.log('error in dislikeblog', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 app.get('/singleblog', verifyuser, async (req, res) => {
     try {
@@ -193,12 +307,13 @@ app.post('/comment', verifyuser, async (req, res) => {
         const userEmail = await req.email;
         const userDetails = await Register.findOne({ email: userEmail });
         let { name, _id } = userDetails;
-        const { newComment, singleBlogId } = await req.body
+        const { newComment, singleBlogId, parentCommentId } = await req.body
         await Comment.create({
             username: name,
             userId: _id,
             commentDesc: newComment,
-            blogId: singleBlogId
+            blogId: singleBlogId,
+            parentCommentId: parentCommentId || null
         })
 
         return res.json({ status: 'comment added' })
@@ -206,9 +321,29 @@ app.post('/comment', verifyuser, async (req, res) => {
 
     }
 })
+app.post('/likecomment', verifyuser, async (req, res) => {
+    try {
+        const { commentId } = req.body;
+        const comment = await Comment.findById(commentId);
+
+        if (!comment) {
+            return res.status(404).json({ message: 'Comment not found' });
+        }
+
+        comment.isLikedByAuthor = !comment.isLikedByAuthor;
+        await comment.save();
+
+        return res.json({ message: 'Comment like toggled', isLikedByAuthor: comment.isLikedByAuthor });
+    } catch (error) {
+        console.log('error in likecomment', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 app.post('/deletecomment', async (req, res) => {
     const { deleteCommentId } = req.body
-    const deleteComment = await Comment.deleteOne({ _id: deleteCommentId })
+    await Comment.deleteOne({ _id: deleteCommentId })
+    await Comment.deleteMany({ parentCommentId: deleteCommentId })
 
     return res.json({ message: `Comment deleted with id ${deleteCommentId}` })
 })

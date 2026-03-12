@@ -24,12 +24,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
             query: () => '/profile',
         }),
 
-        getUserProfile: builder.mutation<UserProfile, { id: string }>({
+        getUserProfile: builder.query<UserProfile, { id: string }>({
             query: (userId) => ({
                 url: '/profile',
                 method: 'POST',
                 body: userId,
             }),
+            providesTags: (_result, _error, arg) => [{ type: 'User', id: arg.id }],
         }),
 
         updateBio: builder.mutation<{ message: string }, UpdateBioRequest>({
@@ -38,7 +39,7 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: newData,
             }),
-            invalidatesTags: ['User'],
+            invalidatesTags: ['User', 'Blog', 'Auth'],
         }),
 
         uploadProfileImage: builder.mutation<{ profileUrl: string }, FormData>({
@@ -47,14 +48,14 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: formData,
             }),
-            invalidatesTags: ['User'],
+            invalidatesTags: ['User', 'Blog', 'Auth'],
         }),
     }),
 });
 
 export const {
     useCheckProfileAuthQuery,
-    useGetUserProfileMutation,
+    useGetUserProfileQuery,
     useUpdateBioMutation,
     useUploadProfileImageMutation,
 } = userApiSlice;

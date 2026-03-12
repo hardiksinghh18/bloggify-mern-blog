@@ -10,12 +10,15 @@ interface Comment {
     };
     commentDesc: string;
     blogId: string;
+    parentCommentId?: string;
+    isLikedByAuthor?: boolean;
     createdAt: string;
 }
 
 interface AddCommentRequest {
     newComment: string;
     singleBlogId: string;
+    parentCommentId?: string;
 }
 
 export const commentsApiSlice = apiSlice.injectEndpoints({
@@ -48,6 +51,15 @@ export const commentsApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: [{ type: 'Comment', id: 'LIST' }],
         }),
+
+        toggleLikeComment: builder.mutation<{ message: string, isLikedByAuthor: boolean }, { commentId: string }>({
+            query: ({ commentId }) => ({
+                url: '/likecomment',
+                method: 'POST',
+                body: { commentId },
+            }),
+            invalidatesTags: [{ type: 'Comment', id: 'LIST' }],
+        }),
     }),
 });
 
@@ -55,4 +67,5 @@ export const {
     useGetCommentsQuery,
     useAddCommentMutation,
     useDeleteCommentMutation,
+    useToggleLikeCommentMutation,
 } = commentsApiSlice;
