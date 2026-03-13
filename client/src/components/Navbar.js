@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import 'boxicons'
 import Logo from '../images/Logo.png'
 import defaultProfile from '../images/defaultProfile.jpg'
@@ -6,8 +6,7 @@ import defaultProfile from '../images/defaultProfile.jpg'
 import { useNavigate, NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectIsAuthenticated, selectUserInfo, logout as logoutAction, setCredentials } from '../features/auth/authSlice'
-import { useLogoutMutation } from '../features/auth/authApiSlice'
-import { useGetDashboardQuery } from '../features/blogs/blogsApiSlice'
+import { useLogoutMutation, useGetMeQuery } from '../features/auth/authApiSlice'
 import { apiSlice } from '../features/api/apiSlice'
 import { useThemeSwitch } from '../hooks/useThemeSwitch'
 import { toast } from 'react-toastify';
@@ -20,33 +19,23 @@ const Navbar = () => {
   const userInfo = useSelector(selectUserInfo);
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const navigate = useNavigate()
-  useThemeSwitch();
+  const [mode, setMode] = useThemeSwitch();
   const [logoutApi] = useLogoutMutation();
 
-  // Fetch dashboard data to populate auth state (uses RTK Query cache — no duplicate calls)
-  const { data: dashboardData, isSuccess } = useGetDashboardQuery();
+  // Fetch only user data to populate auth state
+  const { data: meData, isSuccess } = useGetMeQuery();
 
   useEffect(() => {
-    if (isSuccess && dashboardData?.valid) {
-      dispatch(setCredentials({ user: dashboardData.user, valid: dashboardData.valid }));
+    if (isSuccess && meData?.valid) {
+      dispatch(setCredentials({ user: meData.user, valid: meData.valid }));
     }
-  }, [isSuccess, dashboardData, dispatch]);
+  }, [isSuccess, meData, dispatch]);
 
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem("theme") || "dark";
-  });
   // Toggle theme between light and dark
   const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("theme", newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
+    const newTheme = mode === "light" ? "dark" : "light";
+    setMode(newTheme);
   };
-
-  useEffect(() => {
-    // Set default theme on page load
-    document.documentElement.setAttribute("data-theme", theme);
-  }, [theme]);
 
   const handleLogout = async () => {
     const confirmLogout = window.confirm('Are you sure you want to log out?');
@@ -93,7 +82,7 @@ const Navbar = () => {
         </div>
         )}
         <button className="theme-toggle-btn ml-4 text-lg" onClick={toggleTheme}>
-          {theme === "light" ? (<MdDarkMode />) : <MdLightMode />}
+          {mode === "light" ? (<MdDarkMode />) : <MdLightMode />}
         </button>
 
 

@@ -26,7 +26,15 @@ const userSchema = new mongoose.Schema({
     },
     bio: {
         type: String
-    }
+    },
+    followers: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Register'
+    }],
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Register'
+    }]
 })
 
 userSchema.methods.generateAuthToken = async function () {

@@ -1,53 +1,63 @@
 require('dotenv').config();
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 
-const verifyuser = (req, res, next) => {
+const verifyuser = async (req, res, next) => {
     try {
-        const accessToken = req.cookies.accessToken
+        const accessToken = req.cookies.accessToken;
 
         if (!accessToken) {
-            if (renewToken(req, res)) {
-                return next()
-
+            const renewed = await renewToken(req, res);
+            if (renewed) {
+                return next();
+            } else {
+                // renewToken already sent a response if it returned false
+                return;
             }
         } else {
             jwt.verify(accessToken, process.env.ACCESS_TOKEN_KEY, (err, decoded) => {
                 if (err) {
-                    return res.json({ valid: false, message: "Invalid Token" })
+                    return res.status(401).json({ valid: false, message: "Invalid Token" });
                 } else {
-                    req.email = decoded.email
+                    req.email = decoded.email;
                     return next();
                 }
-            })
+            });
         }
     } catch (error) {
-        console.log("error in the verify user ", error)
+        console.log("error in the verify user ", error);
+        return res.status(500).json({ valid: false, message: "Server Error" });
     }
-}
+};
 
 const renewToken = (req, res) => {
-    try {
-        const refreshToken = req.cookies.refreshToken
-        let exist = false;
+    return new Promise((resolve) => {
+        const refreshToken = req.cookies.refreshToken;
         if (!refreshToken) {
-            return res.json({ valid: false, message: 'No refresh token' })
-        } else {
-            jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY, (err, decoded) => {
-                if (err) {
-                    return res.json({ valid: false, message: 'Invalid Refresh Token' });
-                } else {
-                    const accessToken = jwt.sign({ email: decoded.email },
-                        process.env.ACCESS_TOKEN_KEY, { expiresIn: '1d' })
-                    res.cookie('accessToken', accessToken, { maxAge: 24 * 60 * 60 * 1000, path: "/", httpOnly: true, secure: true, sameSite: 'None' })
-                    exist = true;
-                }
-            })
+            res.status(401).json({ valid: false, message: 'No refresh token' });
+            return resolve(false);
         }
 
-        return exist
-    } catch (error) {
-        console.log('error in renew', error)
-    }
-}
+        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY, (err, decoded) => {
+            if (err) {
+                res.status(401).json({ valid: false, message: 'Invalid Refresh Token' });
+                return resolve(false);
+            } else {
+                const accessToken = jwt.sign({ email: decoded.email },
+                    process.env.ACCESS_TOKEN_KEY, { expiresIn: '1d' });
+                
+                res.cookie('accessToken', accessToken, { 
+                    maxAge: 24 * 60 * 60 * 1000, 
+                    path: "/", 
+                    httpOnly: true, 
+                    secure: true, 
+                    sameSite: 'None' 
+                });
+                
+                req.email = decoded.email; // Set email for next middleware/route
+                return resolve(true);
+            }
+        });
+    });
+};
 
 module.exports = verifyuser;

@@ -17,30 +17,34 @@ function App() {
 
   return (
     <StyledEngineProvider injectFirst>
-      <ToastContainer
-        className={'text-sm '}
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
+      <div className="flex flex-col min-h-screen w-full">
+        <ToastContainer
+          className={'text-sm '}
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="dark"
+        />
 
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Enter />} />
-        <Route path="/blogs" element={<Dashboard />} />
-        <Route path="/newpost" element={<CreatePost />} />
-        <Route path='/blogs/:id/:title' element={<SingleBlog />} />
-        <Route path='/profile/:id/:name' element={<UserProfile />} />
-      </Routes>
-      <Footer />
+        <Navbar />
+        <main className="flex-grow">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Enter />} />
+            <Route path="/blogs" element={<Dashboard />} />
+            <Route path="/newpost" element={<CreatePost />} />
+            <Route path='/blogs/:id/:title' element={<SingleBlog />} />
+            <Route path='/profile/:id/:name' element={<UserProfile />} />
+          </Routes>
+        </main>
+        <Footer />
+      </div>
     </StyledEngineProvider>
   );
 }

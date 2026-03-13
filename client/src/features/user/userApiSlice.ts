@@ -6,6 +6,8 @@ interface UserProfile {
     email: string;
     bio?: string;
     profileImage?: string;
+    followers?: any[];
+    following?: any[];
 }
 
 interface AuthCheckResponse {
@@ -50,6 +52,15 @@ export const userApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['User', 'Blog', 'Auth'],
         }),
+
+        followUser: builder.mutation<{ message: string, isFollowing: boolean }, { targetUserId: string }>({
+            query: (body) => ({
+                url: '/follow',
+                method: 'POST',
+                body,
+            }),
+            invalidatesTags: ['User', 'Auth'],
+        }),
     }),
 });
 
@@ -58,4 +69,5 @@ export const {
     useGetUserProfileQuery,
     useUpdateBioMutation,
     useUploadProfileImageMutation,
+    useFollowUserMutation,
 } = userApiSlice;

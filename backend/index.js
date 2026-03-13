@@ -112,20 +112,58 @@ app.post('/login', async (req, res) => {
 app.get('/dashboard', verifyuser, async (req, res) => {
     try {
         const userEmail = req.email
-        const allBlogs = await Blog.find({}).populate('author').sort({ createdAt: -1 })
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const allBlogs = await Blog.find({})
+            .populate('author')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalBlogs = await Blog.countDocuments({});
         const userDetails = await Register.findOne({ email: userEmail });
 
-        return res.json({ valid: true, user: userDetails, allBlogs: allBlogs, message: "authorized" })
+        return res.json({ 
+            valid: true, 
+            user: userDetails, 
+            allBlogs: allBlogs, 
+            totalBlogs: totalBlogs,
+            message: "authorized" 
+        })
     } catch (error) {
         console.log('error in dashboard', error)
+        res.status(500).json({ message: "Internal server error" })
     }
 })
 
 // Public route - no auth required, allows anyone to read blogs
+app.get('/me', verifyuser, async (req, res) => {
+    try {
+        const userEmail = req.email;
+        const userDetails = await Register.findOne({ email: userEmail });
+        return res.json({ valid: true, user: userDetails });
+    } catch (error) {
+        console.log('error in /me', error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 app.get('/blogs', async (req, res) => {
     try {
-        const allBlogs = await Blog.find({}).populate('author').sort({ createdAt: -1 })
-        return res.json({ allBlogs })
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const allBlogs = await Blog.find({})
+            .populate('author')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        const totalBlogs = await Blog.countDocuments({});
+        return res.json({ allBlogs, totalBlogs })
     } catch (error) {
         console.log('error in public blogs', error)
         return res.status(500).json({ message: 'Internal server error' })
@@ -135,42 +173,78 @@ app.get('/blogs', async (req, res) => {
 // Trending blogs endpoint - ranks blogs by engagement score with time decay
 app.get('/trending', async (req, res) => {
     try {
-        // Get comment counts per blog
-        const commentCounts = await Comment.aggregate([
-            { $match: { parentCommentId: null } }, // Only count top-level comments
-            { $group: { _id: '$blogId', count: { $sum: 1 } } }
-        ]);
-        const commentMap = {};
-        commentCounts.forEach(c => { commentMap[c._id.toString()] = c.count; });
-
-        // Get all blogs
-        const allBlogs = await Blog.find({}).populate('author').lean();
-
-        const now = new Date();
-
-        // Calculate trending score for each blog
-        const scored = allBlogs?.map(blog => {
-            const views = blog.views || 0;
-            const likesCount = (blog.likes || []).length;
-            const commentsCount = commentMap[blog._id.toString()] || 0;
-
-            // Time decay: hours since creation
-            const hoursAge = (now - new Date(blog.createdAt)) / (1000 * 60 * 60);
-            const decay = Math.pow((hoursAge / 24) + 1, 0.5); // sqrt decay
-
-            // Weighted score: likes matter most, then comments, then views
-            const rawScore = (views * 1) + (likesCount * 3) + (commentsCount * 2);
-            const trendingScore = rawScore / decay;
-
-            return { ...blog, trendingScore, commentsCount };
-        });
-
-        // Sort by trending score descending, take top results
         const limit = parseInt(req.query.limit) || 5;
-        scored.sort((a, b) => b.trendingScore - a.trendingScore);
-        const trending = scored.slice(0, limit);
+        
+        const trendingBlogs = await Blog.aggregate([
+            // Calculate basic counts and engagement score
+            {
+                $addFields: {
+                    likesCount: { $size: { $ifNull: ["$likes", []] } },
+                    // Convert date to hours since now for decay
+                    hoursAge: {
+                        $divide: [
+                            { $subtract: [new Date(), "$createdAt"] },
+                            1000 * 60 * 60
+                        ]
+                    }
+                }
+            },
+            // Lookup comments count
+            {
+                $lookup: {
+                    from: "comments",
+                    let: { blogId: "$_id" },
+                    pipeline: [
+                        { $match: { $expr: { $and: [
+                            { $eq: ["$blogId", "$$blogId"] },
+                            { $eq: ["$parentCommentId", null] }
+                        ] } } },
+                        { $count: "count" }
+                    ],
+                    as: "comments"
+                }
+            },
+            {
+                $addFields: {
+                    commentsCount: { $ifNull: [{ $arrayElemAt: ["$comments.count", 0] }, 0] }
+                }
+            },
+            // Calculate final trending score with decay
+            // Score = (views*1 + likes*3 + comments*2) / sqrt(ageDays + 1)
+            {
+                $addFields: {
+                    rawScore: {
+                        $add: [
+                            { $multiply: ["$views", 1] },
+                            { $multiply: ["$likesCount", 3] },
+                            { $multiply: ["$commentsCount", 2] }
+                        ]
+                    },
+                    decay: {
+                        $sqrt: { $add: [{ $divide: ["$hoursAge", 24] }, 1] }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    trendingScore: { $divide: ["$rawScore", "$decay"] }
+                }
+            },
+            // Sort, limit, and populate author (manually joins since aggregate doesn't auto-populate)
+            { $sort: { trendingScore: -1 } },
+            { $limit: limit },
+            {
+                $lookup: {
+                    from: "registers", // or whatever your user collection is named
+                    localField: "author",
+                    foreignField: "_id",
+                    as: "author"
+                }
+            },
+            { $unwind: "$author" }
+        ]);
 
-        return res.json({ trendingBlogs: trending });
+        return res.json({ trendingBlogs });
     } catch (error) {
         console.log('error in trending', error);
         return res.status(500).json({ message: 'Internal server error' });
@@ -367,10 +441,16 @@ app.post('/profile', async (req, res) => {
     try {
         const { id } = req.body
         const userDetails = await Register.findOne({ _id: id })
+            .select('-password')
+            .populate('followers', 'name profileImage')
+            .populate('following', 'name profileImage');
+
+        if (!userDetails) return res.status(404).json({ message: 'User not found' });
 
         return res.json(userDetails)
     } catch (error) {
         console.log(error)
+        res.status(500).json({ message: 'Internal server error' });
     }
 })
 
@@ -397,6 +477,40 @@ app.post('/updatebio', verifyuser, async (req, res) => {
 
     return res.json({ message: "Bio Updated Successfully!" });
 })
+
+app.post('/follow', verifyuser, async (req, res) => {
+    try {
+        const { targetUserId } = req.body;
+        const currentUserEmail = req.email;
+        
+        const currentUser = await Register.findOne({ email: currentUserEmail });
+        const targetUser = await Register.findById(targetUserId);
+
+        if (!targetUser) return res.status(404).json({ message: 'Target user not found' });
+        if (currentUser._id.toString() === targetUserId) return res.status(400).json({ message: "You can't follow yourself" });
+
+        const isFollowing = currentUser.following.includes(targetUserId);
+
+        if (isFollowing) {
+            // Unfollow
+            currentUser.following.pull(targetUserId);
+            targetUser.followers.pull(currentUser._id);
+            await currentUser.save();
+            await targetUser.save();
+            return res.json({ message: 'Unfollowed successfully', isFollowing: false });
+        } else {
+            // Follow
+            currentUser.following.push(targetUserId);
+            targetUser.followers.push(currentUser._id);
+            await currentUser.save();
+            await targetUser.save();
+            return res.json({ message: 'Followed successfully', isFollowing: true });
+        }
+    } catch (error) {
+        console.log('error in follow', error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 app.post('/deleteblog', async (req, res) => {
     const { blogId } = req.body
