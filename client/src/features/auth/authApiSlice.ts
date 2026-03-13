@@ -44,7 +44,12 @@ export const authApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ['Auth', 'Blog', 'Comment', 'User'],
         }),
+
+        getMe: builder.query<{ valid: boolean, user: any }, void>({
+            query: () => '/me',
+            providesTags: ['Auth'],
+        }),
     }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation } = authApiSlice;
+export const { useLoginMutation, useRegisterMutation, useLogoutMutation, useGetMeQuery } = authApiSlice;

@@ -51,11 +51,6 @@ const LoadingSkeleton = () => {
                             <div className="w-10 h-7 rounded bg-gray-300 dark:bg-gray-400"></div>
                             <div className="w-10 h-3 rounded bg-gray-200 dark:bg-gray-500"></div>
                         </div>
-                        <div className="w-px h-10 bg-gray-200 dark:bg-gray-700"></div>
-                        <div className="flex flex-col items-center sm:items-start gap-1">
-                            <div className="w-8 h-7 rounded bg-gray-300 dark:bg-gray-400"></div>
-                            <div className="w-10 h-3 rounded bg-gray-200 dark:bg-gray-500"></div>
-                        </div>
                     </div>
                 </div>
             </div>

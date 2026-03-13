@@ -2,26 +2,37 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import { setCredentials } from '../features/auth/authSlice'
-import { useGetDashboardQuery, useGetTrendingBlogsQuery } from '../features/blogs/blogsApiSlice'
+import { useGetDashboardQuery, useGetTrendingBlogsQuery, blogsApiSlice } from '../features/blogs/blogsApiSlice'
 import BlogLayoutThree from '../components/Blog/BlogLayoutThree'
 import LoadingNew from '../components/LoadingSkeletons/LoadingNew'
+import { Pagination } from '@mui/material'
 
 
 const Dashboard = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('latest')
+  const [page, setPage] = useState(1);
+  const limit = 10;
 
-  const { data, isLoading, isSuccess, isError } = useGetDashboardQuery();
-  const { data: trendingData, isLoading: trendingLoading } = useGetTrendingBlogsQuery(10);
+  const { data, isLoading, isSuccess, isError } = useGetDashboardQuery({ page, limit });
+  const { data: trendingData, isLoading: trendingLoading } = useGetTrendingBlogsQuery(limit);
+  
+  const prefetchDashboard = blogsApiSlice.usePrefetch('getDashboard');
 
   useEffect(() => {
     if (isSuccess && data?.valid) {
       dispatch(setCredentials({ user: data.user, valid: data.valid }));
+      
+      // Prefetch next page
+      const totalPages = Math.ceil((data?.totalBlogs || 0) / limit);
+      if (page < totalPages) {
+        prefetchDashboard({ page: page + 1, limit });
+      }
     } else if (isSuccess && !data?.valid) {
       navigate('/login');
     }
-  }, [isSuccess, data, dispatch, navigate]);
+  }, [isSuccess, data, dispatch, navigate, page, prefetchDashboard]);
 
   useEffect(() => {
     if (isError) {
@@ -31,6 +42,8 @@ const Dashboard = () => {
 
   const blogsData = data?.allBlogs;
   const trendingBlogs = trendingData?.trendingBlogs;
+  const totalBlogs = data?.totalBlogs || 0;
+  const totalPages = Math.ceil(totalBlogs / limit);
 
   if (isLoading) {
     return (
@@ -41,18 +54,26 @@ const Dashboard = () => {
   const displayedBlogs = activeTab === 'latest' ? blogsData : trendingBlogs;
   const isTabLoading = activeTab === 'trending' && trendingLoading;
 
+  const handlePageChange = (event, value) => {
+    setPage(value);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <>
 
       {blogsData &&
-        <div className=' w-screen px-0 mx-0 flex flex-col items-center '>
+        <div className=' w-screen px-0 mx-0 flex flex-col items-center pb-16'>
 
           <div className='w-full max-w-5xl flex flex-col px-4 sm:px-8 lg:px-16 my-8 items-center mx-auto'>
 
             {/* Tab Switcher */}
             <div className='w-full flex items-center gap-0 mb-2 border-b dark:border-gray-400'>
               <button
-                onClick={() => setActiveTab('latest')}
+                onClick={() => {
+                  setActiveTab('latest')
+                  setPage(1)
+                }}
                 className={`relative px-5 py-3 text-sm sm:text-base font-semibold transition-colors duration-200 ${activeTab === 'latest'
                     ? ''
                     : 'text-gray-500 hover:text-gray-700'
@@ -88,11 +109,31 @@ const Dashboard = () => {
             ) : (
               <div className='flex flex-col w-full'>
                 {displayedBlogs && displayedBlogs.length > 0 ? (
-                  displayedBlogs.map((blog) => (
-                    <div key={blog?._id} className='w-full'>
-                      <BlogLayoutThree blog={blog} />
+                  <>
+                    <div className='flex flex-col w-full mb-8'>
+                      {displayedBlogs.map((blog) => (
+                        <div key={blog?._id} className='w-full'>
+                          <BlogLayoutThree blog={blog} />
+                        </div>
+                      ))}
                     </div>
-                  ))
+
+                    {activeTab === 'latest' && totalPages > 1 && (
+                      <div className='flex justify-center mt-8'>
+                        <Pagination
+                          count={totalPages}
+                          page={page}
+                          onChange={handlePageChange}
+                          color="primary"
+                          sx={{
+                            '& .MuiPaginationItem-root': {
+                              color: 'inherit',
+                            }
+                          }}
+                        />
+                      </div>
+                    )}
+                  </>
                 ) : (
                   activeTab === 'trending' && (
                     <div className="w-full text-center py-12 opacity-50">

@@ -72,7 +72,7 @@ const BlogLayoutThree = ({ blog }) => {
 
                     {/* Read Time */}
                     <div className="flex items-center text-sm font-medium text-gray-500 dark:text-gray-400">
-                        <span>{readTimeMinutes} min read</span>
+                        <span>{readTimeMinutes} min</span>
                     </div>
                 </div>
             </div>

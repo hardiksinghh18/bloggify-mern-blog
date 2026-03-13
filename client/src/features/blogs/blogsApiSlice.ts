@@ -37,7 +37,13 @@ interface DashboardResponse {
         profileImage?: string;
     };
     allBlogs: Blog[];
+    totalBlogs: number;
     message: string;
+}
+
+interface PublicBlogsResponse {
+    allBlogs: Blog[];
+    totalBlogs: number;
 }
 
 interface AuthCheckResponse {
@@ -52,10 +58,19 @@ interface EditBlogRequest {
     blogId: string;
 }
 
+interface PaginationParams {
+    page?: number;
+    limit?: number;
+}
+
 export const blogsApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getDashboard: builder.query<DashboardResponse, void>({
-            query: () => '/dashboard',
+        getDashboard: builder.query<DashboardResponse, PaginationParams | void>({
+            query: (params) => {
+                const p = params && 'page' in params ? params.page : 1;
+                const l = params && 'limit' in params ? params.limit : 10;
+                return `/dashboard?page=${p}&limit=${l}`;
+            },
             providesTags: (result) =>
                 result?.allBlogs
                     ? [
@@ -66,8 +81,12 @@ export const blogsApiSlice = apiSlice.injectEndpoints({
                     : [{ type: 'Blog', id: 'LIST' }, 'Auth'],
         }),
 
-        getPublicBlogs: builder.query<{ allBlogs: Blog[] }, void>({
-            query: () => '/blogs',
+        getPublicBlogs: builder.query<PublicBlogsResponse, PaginationParams | void>({
+            query: (params) => {
+                const p = params && 'page' in params ? params.page : 1;
+                const l = params && 'limit' in params ? params.limit : 10;
+                return `/blogs?page=${p}&limit=${l}`;
+            },
             providesTags: (result) =>
                 result?.allBlogs
                     ? [

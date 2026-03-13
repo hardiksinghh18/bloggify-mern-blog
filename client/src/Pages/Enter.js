@@ -34,7 +34,7 @@ const Enter = () => {
             if (res?.valid) {
                 toast.success('Registered Successfully !')
                 dispatch(setAuthenticated(true));
-                navigate('/blogs')
+                navigate('/')
             } else {
                 toast.error('Please try again.')
                 navigate('/login')
@@ -82,9 +82,9 @@ const Enter = () => {
 
             <div className="signup_page  ">
 
-                <div className={isActive ? 'form_container activeForm justify-center items-center w-full     sm:w-[60vw] ' : 'form_container justify-center items-center w-full sm:w-[60vw]'} id="form_container">
+                <div className={isActive ? 'form_container activeForm justify-center items-center w-full     sm:w-[50vw] ' : 'form_container justify-center items-center w-full sm:w-[50vw]'} id="form_container">
 
-                    <div className='form-container   sign-up sm:translate-x-full '>
+                    <div className='form-container sign-up sm:translate-x-full'>
                         <form action='/login' method='POST' onSubmit={handlelogin} >
                             <h1 className='mb-4 font-bold text-xl'>Sign In</h1>
 
@@ -101,18 +101,16 @@ const Enter = () => {
                                 )}
 
                             </div>
-                            <LoadingButton loading={loginLoading} className='mt-16' type='submit'>Sign In</LoadingButton>
-
-
+                            <LoadingButton fullWidth loading={loginLoading} className='mt-16' type='submit'>Sign In</LoadingButton>
 
                             <div className=" flex   gap-2 mt-4 justify-center text-xs sm:text-base items-center sm:hidden">
                                 <h1 className='font-semibold'>Don't have an account ?</h1>
-                                <p className=" font-semibold  border-black  border-b-[.5px]  hover:cursor-pointer" id="register" onClick={handleRegister}>Sign Up</p>
+                                <p className=" font-semibold  border-black  border-b-[.5px]  hover:cursor-pointer" id="register" onClick={handleRegister}>Register</p>
                             </div>
                         </form>
 
                     </div>
-                    <div className="form-container sign-in sm:px-6 ">
+                    <div className="form-container sign-in">
                         <form onSubmit={handleregister}>
                             <h1 className='  font-bold'>New to Bloggify ?</h1>
                             <h1 className='mb-4 font-bold text-xl'>Create Account</h1>
@@ -131,18 +129,14 @@ const Enter = () => {
                                 )}
 
                             </div>
-                            <LoadingButton loading={registerLoading} type='submit'>Sign Up</LoadingButton>
+                            <LoadingButton fullWidth loading={registerLoading} type='submit'>Register</LoadingButton>
 
                             <div className=" flex gap-2 mt-4 justify-center text-xs sm:text-base items-center sm:hidden">
                                 <h1 className='font-semibold'>Already a User ?</h1>
                                 <p className=" font-semibold  border-black  border-b-[.5px] hover:cursor-pointer" id="login" onClick={handleLogin}>Sign In</p>
                             </div>
                         </form>
-
-
                     </div>
-
-
 
                     <div className="toggle-container  sm:block ">
                         <div className="toggle">
@@ -154,15 +148,11 @@ const Enter = () => {
                             <div className="toggle-panel toggle-left">
                                 <h1 className='font-semibold'>Don't have an account ?</h1>
                                 <p>Register and create a new account for free !</p>
-                                <button className="hiddennew" id="register" onClick={handleRegister}>Sign Up</button>
+                                <button className="hiddennew" id="register" onClick={handleRegister}>Register</button>
                             </div>
                         </div>
                     </div>
                 </div>
-
-
-
-
             </div>
 
 
