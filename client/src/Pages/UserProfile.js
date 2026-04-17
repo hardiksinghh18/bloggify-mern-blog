@@ -11,6 +11,8 @@ import { selectUserInfo, setAuthenticated } from '../features/auth/authSlice'
 import { useGetDashboardQuery } from '../features/blogs/blogsApiSlice'
 import { useCheckProfileAuthQuery, useGetUserProfileQuery, useUpdateBioMutation, useFollowUserMutation } from '../features/user/userApiSlice'
 import { useDeleteBlogMutation } from '../features/blogs/blogsApiSlice'
+import { slugify } from '../Utils/slugify'
+import Button from '@mui/lab/LoadingButton'
 
 const UserProfile = () => {
 
@@ -128,7 +130,7 @@ const UserProfile = () => {
   const followingCount = userProfile?.following?.length || 0;
 
   const isOwnProfile = userInfo?._id === userId?.id;
-  const isFollowingProfile = userProfile?.followers?.some(follower => 
+  const isFollowingProfile = userProfile?.followers?.some(follower =>
     follower._id === userInfo?._id || follower === userInfo?._id
   );
 
@@ -138,7 +140,7 @@ const UserProfile = () => {
 
     return (
       <div className="flex items-center justify-between p-4 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition-colors rounded-2xl group">
-        <a href={`/profile/${user._id}/${user.name}`} className="flex items-center gap-4 flex-1">
+        <a href={`/profile/${user._id}/${slugify(user.name)}`} className="flex items-center gap-4 flex-1">
           <img
             src={user.profileImage || defaultProfile}
             alt={user.name}
@@ -149,15 +151,14 @@ const UserProfile = () => {
             <span className="text-xs opacity-50">View Profile</span>
           </div>
         </a>
-        
+
         {!isMe && (
-          <button 
+          <button
             onClick={() => handleFollow(user._id)}
-            className={`text-xs font-bold px-4 py-1.5 rounded-lg border transition-all ${
-              isFollowingThisUser 
-                ? "border-gray-200 dark:border-gray-800 hover:bg-red-50 hover:text-red-600 hover:border-red-100" 
+            className={`text-xs font-bold px-4 py-1.5 rounded-lg border transition-all ${isFollowingThisUser
+                ? "border-gray-200 dark:border-gray-800 hover:bg-red-50 hover:text-red-600 hover:border-red-100"
                 : "bg-blue-600 text-white border-transparent hover:bg-blue-700 shadow-sm"
-            }`}
+              }`}
           >
             {isFollowingThisUser ? 'Following' : 'Follow'}
           </button>
@@ -177,7 +178,7 @@ const UserProfile = () => {
 
       {/* Profile Header */}
       <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 pb-10">
-        
+
         {/* Avatar */}
         <div className="relative shrink-0">
           {editable ? (
@@ -209,6 +210,7 @@ const UserProfile = () => {
                 value={newName}
                 onChange={handleName}
                 placeholder={userProfile?.name}
+                maxLength={30}
                 className="text-2xl sm:text-3xl font-extrabold bg-transparent border border-gray-300 dark:border-gray-600 rounded-xl outline-none px-4 py-2 w-full max-w-md focus:border-blue-500 transition-colors text-center sm:text-left"
               />
             ) : (
@@ -218,10 +220,9 @@ const UserProfile = () => {
                   !editable && (
                     <button
                       onClick={handleEdit}
-                      className="flex items-center justify-center gap-1.5 text-xs font-bold px-6 py-2.5 rounded-full border border-gray-200 dark:border-gray-800 hover:bg-gray-100 dark:hover:bg-white/5 transition-all active:scale-95 w-full sm:w-auto"
+                      className="p-1 opacity-60 hover:opacity-100 transition-opacity"
                     >
-                      <i className='bx bx-cog text-sm'></i>
-                      Edit Profile
+                      <i className='bx bx-cog text-xl'></i>
                     </button>
                   )
                 ) : (
@@ -229,11 +230,10 @@ const UserProfile = () => {
                     loading={followLoading}
                     onClick={() => handleFollow(userId?.id)}
                     variant={isFollowingProfile ? "outlined" : "contained"}
-                    className={`text-xs font-bold rounded-full transition-all px-10 py-2.5 w-full sm:w-auto ${
-                      isFollowingProfile 
-                        ? "border-gray-200 dark:border-gray-800 text-inherit hover:bg-red-50 hover:text-red-600" 
+                    className={`text-xs font-bold rounded-full transition-all px-10 py-2.5 w-full sm:w-auto ${isFollowingProfile
+                        ? "border-gray-200 dark:border-gray-800 text-inherit hover:bg-red-50 hover:text-red-600"
                         : "bg-blue-600 text-white hover:shadow-lg shadow-blue-500/20"
-                    }`}
+                      }`}
                     sx={{
                       borderRadius: '9999px',
                       textTransform: 'none',
@@ -265,6 +265,7 @@ const UserProfile = () => {
               onChange={handleBio}
               placeholder={userProfile?.bio ? userProfile?.bio : 'Tell us about yourself...'}
               rows={3}
+              maxLength={150}
               className="text-sm sm:text-base bg-transparent border border-gray-300 dark:border-gray-600 rounded-xl outline-none w-full max-w-lg mt-2 resize-none px-4 py-2 focus:border-blue-500 transition-colors"
             />
           ) : (
@@ -285,7 +286,7 @@ const UserProfile = () => {
               <span className="text-xl font-black">{totalLikes}</span>
             </div>
           </div>
-          
+
           {editable && (
             <div className="flex items-center gap-3 mt-6">
               <LoadingButton
@@ -293,7 +294,6 @@ const UserProfile = () => {
                 onClick={updateUserProfile}
                 variant="contained"
                 sx={{
-                  borderRadius: '9999px',
                   textTransform: 'none',
                   fontFamily: 'inherit',
                   fontWeight: 700,
@@ -303,12 +303,13 @@ const UserProfile = () => {
               >
                 Save Changes
               </LoadingButton>
-              <button
+              <Button
+                variant='outlined'
                 onClick={handleCancel}
-                className="text-sm font-bold px-6 py-2 rounded-full border border-gray-200 dark:border-gray-800 hover:bg-gray-50 transition-colors"
+                className="text-sm font-bold px-6 py-2 border border-gray-200 dark:border-gray-800 hover:bg-gray-50 transition-colors"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -316,35 +317,32 @@ const UserProfile = () => {
 
       {/* Tabs Switcher - Instagram Style */}
       <div className="flex items-center justify-center sm:justify-start gap-12 border-t border-gray-100 dark:border-gray-800">
-        <button 
+        <button
           onClick={() => setActiveTab('posts')}
-          className={`flex items-center gap-2 pt-4 pb-2 border-t-2 transition-all uppercase tracking-widest text-[11px] font-bold ${
-            activeTab === 'posts' 
-              ? "" 
+          className={`flex items-center gap-2 pt-4 pb-2 border-t-2 transition-all uppercase tracking-widest text-[11px] font-bold ${activeTab === 'posts'
+              ? ""
               : "border-transparent text-gray-400 hover:text-gray-600"
-          }`}
+            }`}
         >
           <i className={`bx ${activeTab === 'posts' ? 'bxs-grid-alt' : 'bx-grid-alt'} text-lg sm:text-sm`}></i>
           <span className="hidden sm:inline">Posts ({totalBlogs})</span>
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('followers')}
-          className={`flex items-center gap-2 pt-4 pb-2 border-t-2 transition-all uppercase tracking-widest text-[11px] font-bold ${
-            activeTab === 'followers' 
-              ? "" 
+          className={`flex items-center gap-2 pt-4 pb-2 border-t-2 transition-all uppercase tracking-widest text-[11px] font-bold ${activeTab === 'followers'
+              ? ""
               : "border-transparent text-gray-400 hover:text-gray-600"
-          }`}
+            }`}
         >
           <i className={`bx ${activeTab === 'followers' ? 'bxs-group' : 'bx-group'} text-lg sm:text-sm`}></i>
           <span className="hidden sm:inline">Followers ({followersCount})</span>
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('following')}
-          className={`flex items-center gap-2 pt-4 pb-2 border-t-2 transition-all uppercase tracking-widest text-[11px] font-bold ${
-            activeTab === 'following' 
-              ? "" 
+          className={`flex items-center gap-2 pt-4 pb-2 border-t-2 transition-all uppercase tracking-widest text-[11px] font-bold ${activeTab === 'following'
+              ? ""
               : "border-transparent text-gray-400 hover:text-gray-600"
-          }`}
+            }`}
         >
           <i className={`bx ${activeTab === 'following' ? 'bxs-user-plus' : 'bx-user-plus'} text-lg sm:text-sm`}></i>
           <span className="hidden sm:inline">Following ({followingCount})</span>

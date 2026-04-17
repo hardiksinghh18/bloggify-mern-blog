@@ -12,6 +12,7 @@ import { useThemeSwitch } from '../hooks/useThemeSwitch'
 import { toast } from 'react-toastify';
 import { MdLightMode } from "react-icons/md";
 import { MdDarkMode } from "react-icons/md";
+import { slugify } from '../Utils/slugify'
 
 
 const Navbar = () => {
@@ -73,8 +74,6 @@ const Navbar = () => {
           <div>
             <NavLink to={'/blogs'} className="mx-2" activeclassname="active">Blogs</NavLink>
             <NavLink to={'/newpost'} className="mx-2  " activeclassname="active" ><span>New</span> <i className='bx bxs-pencil mx-1'></i></NavLink>
-
-
           </div>
         ) : (<div>
           <NavLink to={"/blogs"} className="mx-2 " activeclassname="active">Blogs</NavLink>
@@ -84,10 +83,7 @@ const Navbar = () => {
         <button className="theme-toggle-btn ml-4 text-lg" onClick={toggleTheme}>
           {mode === "light" ? (<MdDarkMode />) : <MdLightMode />}
         </button>
-
-
       </nav>
-
 
       <div className="sm:flex items-center relative">
         {userInfo && (
@@ -99,15 +95,15 @@ const Navbar = () => {
               className="h-8 w-8 mr-4 rounded-full  "
             />
             <div className=' relative font-semibold '>
-              <p className='hidden  sm:flex sm:items-center'>
-
-                {userInfo?.name} <span className='text-xs mx-2 '><i className='bx bxs-down-arrow'></i></span>
+              <p className='hidden  md:flex md:items-center min-w-0'>
+                <span className="truncate max-w-[120px]">{userInfo?.name}</span>
+                <span className='text-xs mx-2 '><i className='bx bxs-down-arrow'></i></span>
               </p>
               <div
                 className="hidden absoluteProfile absolute z-50 flex-col justify-between p-4 border rounded-lg top-2 lg:top-6 right-0 mt-1 min-w-32"
               >
                 <a
-                  href={`/profile/${userInfo?._id}/${userInfo?.name}`}
+                  href={`/profile/${userInfo?._id}/${slugify(userInfo?.name)}`}
                   className="w-full mt-2"
                 >
                   <p className="text-sm hover:text-red-600">Profile</p>

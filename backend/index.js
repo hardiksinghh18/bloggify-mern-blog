@@ -368,11 +368,26 @@ app.post('/dislikeblog', verifyuser, async (req, res) => {
     }
 });
 
-app.get('/singleblog', verifyuser, async (req, res) => {
+app.get('/blog/:id', async (req, res) => {
     try {
-        return res.json({ valid: true, message: "authorized" })
+        const { id } = req.params;
+        const blog = await Blog.findById(id).populate('author', 'name profileImage email');
+        if (!blog) {
+            return res.status(404).json({ message: 'Blog not found' });
+        }
+
+        const moreFromAuthor = await Blog.find({ 
+            author: blog.author._id, 
+            _id: { $ne: blog._id } 
+        })
+        .select('title coverImage category createdAt author')
+        .populate('author', 'name profileImage')
+        .limit(3);
+
+        return res.json({ blog, moreFromAuthor, valid: true });
     } catch (error) {
-        console.log('error in single blog', error)
+        console.log('error in single blog /blog/:id', error);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 })
 

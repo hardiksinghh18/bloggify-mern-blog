@@ -63,6 +63,12 @@ interface PaginationParams {
     limit?: number;
 }
 
+interface SingleBlogResponse {
+    blog: Blog;
+    moreFromAuthor: Blog[];
+    valid: boolean;
+}
+
 export const blogsApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
         getDashboard: builder.query<DashboardResponse, PaginationParams | void>({
@@ -105,8 +111,9 @@ export const blogsApiSlice = apiSlice.injectEndpoints({
             query: () => '/newpost',
         }),
 
-        checkSingleBlogAuth: builder.query<AuthCheckResponse, void>({
-            query: () => '/singleblog',
+        getSingleBlog: builder.query<SingleBlogResponse, string>({
+            query: (id) => `/blog/${id}`,
+            providesTags: (result, error, id) => [{ type: 'Blog', id }],
         }),
 
         createPost: builder.mutation<AuthCheckResponse, FormData>({
@@ -172,7 +179,7 @@ export const {
     useGetPublicBlogsQuery,
     useGetTrendingBlogsQuery,
     useCheckNewPostAuthQuery,
-    useCheckSingleBlogAuthQuery,
+    useGetSingleBlogQuery,
     useCreatePostMutation,
     useEditBlogMutation,
     useDeleteBlogMutation,
