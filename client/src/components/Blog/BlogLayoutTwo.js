@@ -1,5 +1,6 @@
 import React from 'react'
 import defaultProfile from '../../images/defaultProfile.jpg'
+import { slugify } from '../../Utils/slugify'
 
 const BlogLayoutTwo = ({ blog }) => {
     const date = new Date(blog?.createdAt)
@@ -8,7 +9,7 @@ const BlogLayoutTwo = ({ blog }) => {
     const profileImageUrl = blog?.author?.profileImage || defaultProfile;
 
     return (
-        <a href={`/blogs/${blog?._id}/${blog?.title}`} className="group flex gap-5 items-start p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200">
+        <a href={`/blogs/${blog?._id}/${slugify(blog?.title)}`} className="group flex gap-5 items-start p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200">
             <div className="shrink-0 w-[120px] h-[90px] sm:w-[140px] sm:h-[100px] rounded-xl overflow-hidden">
                 <img
                     className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out"

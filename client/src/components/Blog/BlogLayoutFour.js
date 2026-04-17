@@ -1,6 +1,7 @@
 import React from 'react'
 import { toast } from 'react-toastify'
 import { useDeleteBlogMutation } from '../../features/blogs/blogsApiSlice'
+import { slugify } from '../../Utils/slugify'
 
 
 const BlogLayoutfour = (props) => {
@@ -27,7 +28,7 @@ const BlogLayoutfour = (props) => {
         <>
             <div className=" flex gap-4 items-center  shadow-md p-4  overflow-hidden text-dark dark:text-light justify-between w-[90vw] lg:w-[60vw] ">
                 <a
-                    href={`/blogs/${blog?._id}/${blog?.title}`}
+                    href={`/blogs/${blog?._id}/${slugify(blog?.title)}`}
                     className=" col-span-12  lg:col-span-4 h-full rounded-xl overflow-hidden"
                 >
 
@@ -38,7 +39,7 @@ const BlogLayoutfour = (props) => {
 
                 <div className="col-span-12  lg:col-span-8 w-full">
 
-                    <a href={`/blogs/${blog?._id}/${blog?.title}`} className="inline-block my-1">
+                    <a href={`/blogs/${blog?._id}/${slugify(blog?.title)}`} className="inline-block my-1">
                         <h2 className="font-semibold capitalize text-[0.65rem] sm:text-lg">
                             <span
                                 className="bg-gradient-to-r from-accent/50 dark:from-accentDark/50 to-accent/50 dark:to-accentDark/50 bg-[length:0px_6px]

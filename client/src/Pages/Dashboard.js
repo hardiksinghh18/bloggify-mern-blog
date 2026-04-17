@@ -68,35 +68,36 @@ const Dashboard = () => {
           <div className='w-full max-w-5xl flex flex-col px-4 sm:px-8 lg:px-16 my-8 items-center mx-auto'>
 
             {/* Tab Switcher */}
-            <div className='w-full flex items-center gap-0 mb-2 border-b dark:border-gray-400'>
+            <div className='w-full flex items-center gap-2 mb-8 border-b border-gray-200 dark:border-gray-800'>
               <button
                 onClick={() => {
                   setActiveTab('latest')
                   setPage(1)
                 }}
-                className={`relative px-5 py-3 text-sm sm:text-base font-semibold transition-colors duration-200 ${activeTab === 'latest'
-                    ? ''
-                    : 'text-gray-500 hover:text-gray-700'
+                className={`relative px-4 py-3 text-sm sm:text-base font-bold transition-all duration-200 ${activeTab === 'latest'
+                    ? 'text-gray-900 dark:text-white'
+                    : 'text-gray-400 hover:text-gray-600'
                   }`}
               >
                 Latest
                 {activeTab === 'latest' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
+                  <span className="absolute bottom-[-1px] left-0 right-0 h-[3px] bg-[#b8004e] rounded-t-full"></span>
                 )}
               </button>
               <button
-                onClick={() => setActiveTab('trending')}
-                className={`relative px-5 py-3 text-sm sm:text-base font-semibold transition-colors duration-200 flex items-center gap-1.5 ${activeTab === 'trending'
-                    ? ''
-                    : 'text-gray-500 hover:text-gray-700'
+                onClick={() => {
+                  setActiveTab('trending')
+                  setPage(1)
+                }}
+                className={`relative px-4 py-3 text-sm sm:text-base font-bold transition-all duration-200 flex items-center gap-2 ${activeTab === 'trending'
+                    ? 'text-gray-900 dark:text-white'
+                    : 'text-gray-400 hover:text-gray-600'
                   }`}
               >
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" />
-                </svg>
+                <i className={`bx bxs-hot text-lg ${activeTab === 'trending' ? 'text-orange-500' : ''}`}></i>
                 Trending
                 {activeTab === 'trending' && (
-                  <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400 rounded-full"></span>
+                  <span className="absolute bottom-[-1px] left-0 right-0 h-[3px] bg-[#b8004e] rounded-t-full"></span>
                 )}
               </button>
             </div>

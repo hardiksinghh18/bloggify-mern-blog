@@ -52,7 +52,7 @@ const ProfilePictureEditor = (props) => {
 
         loading={uploadLoading}
         type='submit'
-        className="mt-4 bg-zinc-900 text-xs   text-white px-4 py-2 rounded hover:bg-blue-600"
+        className="mt-4 bg-zinc-900 text-xs text-white px-4 hover:bg-blue-600"
       >
         Save Profile Picture
       </LoadingButton>
