@@ -4,6 +4,7 @@ interface UserProfile {
     _id: string;
     name: string;
     email: string;
+    username?: string;
     bio?: string;
     profileImage?: string;
     followers?: any[];
@@ -26,13 +27,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
             query: () => '/profile',
         }),
 
-        getUserProfile: builder.query<UserProfile, { id: string }>({
-            query: (userId) => ({
+        getUserProfile: builder.query<UserProfile, { username: string }>({
+            query: (params) => ({
                 url: '/profile',
                 method: 'POST',
-                body: userId,
+                body: params,
             }),
-            providesTags: (_result, _error, arg) => [{ type: 'User', id: arg.id }],
+            providesTags: (_result, _error, arg) => [{ type: 'User', id: arg.username }],
         }),
 
         updateBio: builder.mutation<{ message: string }, UpdateBioRequest>({

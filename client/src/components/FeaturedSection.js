@@ -1,7 +1,8 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import defaultProfile from '../images/defaultProfile.jpg'
 import { useGetTrendingBlogsQuery } from '../features/blogs/blogsApiSlice'
-import { slugify } from '../Utils/slugify'
+
 
 const FeaturedSection = ({ blogsData }) => {
     const { data: trendingData } = useGetTrendingBlogsQuery(5);
@@ -31,18 +32,18 @@ const FeaturedSection = ({ blogsData }) => {
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
                     <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-                        Trending on <span className="text-blue-600 dark:text-blue-400">Bloggify</span>
+                        Trending on <span className="text-[#b8004e] dark:text-[#d81b60]">Bloggify</span>
                     </h2>
                 </div>
-                <a href="/blogs" className="text-sm sm:text-base font-semibold text-blue-600 dark:text-blue-400 hover:underline underline-offset-4 transition-colors">
+                <Link to="/blogs" className="text-sm sm:text-base font-semibold text-[#b8004e] dark:text-[#d81b60] hover:underline underline-offset-4 transition-colors">
                     View all →
-                </a>
+                </Link>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-8">
                 {/* Hero Card */}
                 {heroPost && (
-                    <a href={`/blogs/${heroPost?._id}/${slugify(heroPost?.title)}`} className="group relative flex-1 min-h-[320px] sm:min-h-[400px] rounded-3xl overflow-hidden block">
+                    <Link to={`/blogs/${heroPost?.slug}`} className="group relative flex-1 min-h-[320px] sm:min-h-[400px] rounded-3xl overflow-hidden block">
                         <img
                             src={heroPost?.coverImage}
                             alt={heroPost?.title}
@@ -54,7 +55,7 @@ const FeaturedSection = ({ blogsData }) => {
                         {/* Content */}
                         <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8 z-10">
                             <div className="flex items-center gap-3 mb-3">
-                                <span className="text-xs font-bold text-white/90 bg-blue-600/80 backdrop-blur-sm px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="text-xs font-bold text-white/90 bg-[#b8004e]/80 backdrop-blur-sm px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5">
                                     <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" /></svg>
                                     Trending
                                 </span>
@@ -89,7 +90,7 @@ const FeaturedSection = ({ blogsData }) => {
                                 )}
                             </div>
                         </div>
-                    </a>
+                    </Link>
                 )}
 
                 {/* Side Posts */}
@@ -101,12 +102,12 @@ const FeaturedSection = ({ blogsData }) => {
                         const postDate = blog?.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
                         const profileImg = blog?.author?.profileImage || defaultProfile;
                         return (
-                            <a key={blog?._id || index} href={`/blogs/${blog?._id}/${slugify(blog?.title)}`} className="group flex gap-4 items-start p-4 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-200">
+                            <Link key={blog?._id || index} to={`/blogs/${blog?.slug}`} className="group flex gap-4 items-start p-4 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-200">
                                 <span className="text-3xl font-black opacity-10 leading-none select-none mt-1">
                                     {String(index + 1).padStart(2, '0')}
                                 </span>
                                 <div className="flex flex-col flex-1 gap-1.5">
-                                    <h3 className="text-sm sm:text-[15px] font-bold leading-snug line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                    <h3 className="text-sm sm:text-[15px] font-bold leading-snug line-clamp-2 group-hover:text-[#b8004e] dark:group-hover:text-[#d81b60] transition-colors">
                                         {blog?.title}
                                     </h3>
                                     <div className="flex items-center gap-2">
@@ -118,14 +119,14 @@ const FeaturedSection = ({ blogsData }) => {
                                             <>
                                                 <span className="text-xs font-medium opacity-60">·</span>
                                                 <span className="flex items-center gap-0.5 text-xs font-medium opacity-60">
-                                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
                                                     {formatCount(blog?.views)}
                                                 </span>
                                             </>
                                         )}
                                     </div>
                                 </div>
-                            </a>
+                            </Link>
                         )
                     })}
                 </div>

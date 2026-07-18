@@ -3,7 +3,11 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux';
 import { useLoginMutation, useRegisterMutation } from '../features/auth/authApiSlice';
+import { useGoogleLoginMutation } from '../features/auth/authApiSlice';
 import { setAuthenticated } from '../features/auth/authSlice';
+import { GoogleLogin } from '@react-oauth/google';
+import { useThemeSwitch } from '../hooks/useThemeSwitch';
+
 import LoadingButton from '@mui/lab/LoadingButton';
 
 const Enter = () => {
@@ -17,6 +21,8 @@ const Enter = () => {
 
     const [login, { isLoading: loginLoading }] = useLoginMutation();
     const [register, { isLoading: registerLoading }] = useRegisterMutation();
+    const [googleLoginMutation] = useGoogleLoginMutation();
+    const [mode] = useThemeSwitch();
 
     const handleRegister = () => {
         setisActive(false)
@@ -71,6 +77,25 @@ const Enter = () => {
         }
     }
 
+    const handleGoogleSuccess = async (credentialResponse) => {
+        try {
+            const res = await googleLoginMutation({ token: credentialResponse.credential }).unwrap();
+            if (res?.Login) {
+                dispatch(setAuthenticated(true));
+                toast.success('Google login successful!');
+                navigate('/');
+            } else {
+                toast.error('Google login failed.');
+            }
+        } catch (error) {
+            toast.error('An error occurred during Google login.');
+            console.error(error);
+        }
+    };
+
+    const handleGoogleError = () => {
+        toast.error('Google login failed. Please try again.');
+    };
 
     const handleShow = () => {
         setShow(!show)
@@ -107,6 +132,25 @@ const Enter = () => {
                                 <h1 className='font-semibold'>Don't have an account ?</h1>
                                 <p className=" font-semibold  border-black  border-b-[.5px]  hover:cursor-pointer" id="register" onClick={handleRegister}>Register</p>
                             </div>
+                            <div className="flex items-center w-full my-4">
+                                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                                <span className="px-3 text-sm text-gray-500 dark:text-gray-400">
+                                    Or
+                                </span>
+                                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                            </div>
+                            
+                            <div className="flex justify-center w-full">
+                                <GoogleLogin
+                                    onSuccess={handleGoogleSuccess}
+                                    onError={handleGoogleError}
+                                    theme={mode === "dark" ? "filled_black" : "outline"}
+                                    size="large"
+                                    shape="pill"
+                                    text="continue_with"
+                                    width="280"
+                                />
+                            </div>
                         </form>
 
                     </div>
@@ -134,6 +178,25 @@ const Enter = () => {
                             <div className=" flex gap-2 mt-4 justify-center text-xs sm:text-base items-center sm:hidden">
                                 <h1 className='font-semibold'>Already a User ?</h1>
                                 <p className=" font-semibold  border-black  border-b-[.5px] hover:cursor-pointer" id="login" onClick={handleLogin}>Sign In</p>
+                            </div>
+                            <div className="flex items-center w-full my-4">
+                                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                                <span className="px-3 text-sm text-gray-500 dark:text-gray-400">
+                                    Or
+                                </span>
+                                <div className="flex-grow border-t border-gray-300 dark:border-gray-600"></div>
+                            </div>
+                            
+                            <div className="flex justify-center w-full">
+                                <GoogleLogin
+                                    onSuccess={handleGoogleSuccess}
+                                    onError={handleGoogleError}
+                                    theme={mode === "dark" ? "filled_black" : "outline"}
+                                    size="large"
+                                    shape="pill"
+                                    text="continue_with"
+                                    width="280"
+                                />
                             </div>
                         </form>
                     </div>

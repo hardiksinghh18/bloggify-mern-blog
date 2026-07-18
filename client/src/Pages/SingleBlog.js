@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import defaultProfile from '../images/defaultProfile.jpg'
 import 'react-quill/dist/quill.snow.css';
 import { useSelector } from 'react-redux'
@@ -21,8 +21,7 @@ import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import ThumbDownOutlinedIcon from '@mui/icons-material/ThumbDownOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import { Link } from 'react-router-dom'
-import { slugify } from '../Utils/slugify'
+
 import { useFollowUserMutation } from '../features/user/userApiSlice'
 import { toast } from 'react-toastify'
 import { Tooltip } from '@mui/material'
@@ -30,10 +29,10 @@ import { Tooltip } from '@mui/material'
 const SingleBlog = () => {
   const userInfo = useSelector(selectUserInfo);
   const isAuthenticated = useSelector(selectIsAuthenticated);
-  const { id } = useParams();
+  const { slug } = useParams();
   const [editable, setEditable] = useState(false);
 
-  const { data: blogData, isLoading } = useGetSingleBlogQuery(id);
+  const { data: blogData, isLoading } = useGetSingleBlogQuery(slug);
   const { data: allComments = [] } = useGetCommentsQuery();
   const [incrementViews] = useIncrementViewsMutation();
   const [likeBlogApi] = useLikeBlogMutation();
@@ -46,17 +45,17 @@ const SingleBlog = () => {
   };
 
   const hasIncrementedViews = useRef(false);
+  const blog = blogData?.blog;
 
   useEffect(() => {
-    if (id && !hasIncrementedViews.current) {
+    if (blog?._id && !hasIncrementedViews.current) {
       hasIncrementedViews.current = true;
-      incrementViews({ id });
+      incrementViews({ id: blog._id });
     }
-  }, [id, incrementViews]);
+  }, [blog?._id, incrementViews]);
 
-  const blog = blogData?.blog;
   const moreBlogs = blogData?.moreFromAuthor || [];
-  const blogComments = allComments?.filter((item) => item.blogId === id) || [];
+  const blogComments = allComments?.filter((item) => item.blogId === blog?._id) || [];
 
   // Show loading skeleton while loading
   if (isLoading || !blog) {
@@ -109,9 +108,9 @@ const SingleBlog = () => {
             <div className="w-full text-left"><h2 className=' lg:my-4 text-2xl md:text-3xl lg:text-4xl font-bold'>{blog?.title}</h2></div>
             <div className='flex flex-row flex-wrap gap-4 justify-between w-full items-center my-6'>
               <div className='flex justify-start gap-3 sm:gap-4 items-center overflow-hidden'>
-                <a href={`/profile/${blog?.author?._id}/${slugify(blog?.author?.name)}`} className="shrink-0 flex items-center">
+                <Link to={`/profile/${blog?.author?.username}`} className="shrink-0 flex items-center">
                   <img className='h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover' src={profileImageUrl} alt="" />
-                </a>
+                </Link>
                 <div className='min-w-0'>
                   <Tooltip 
                     title={blog?.author?.name?.length > 20 ? blog?.author?.name : ""} 
@@ -136,7 +135,7 @@ const SingleBlog = () => {
                       }
                     }}
                   >
-                    <a href={`/profile/${blog?.author?._id}/${slugify(blog?.author?.name)}`} className="font-semibold text-[13px] sm:text-base block truncate max-w-[120px] sm:max-w-[200px]" >{blog?.author?.name}</a>
+                    <Link to={`/profile/${blog?.author?.username}`} className="font-semibold text-[13px] sm:text-base block truncate max-w-[120px] sm:max-w-[200px]" >{blog?.author?.name}</Link>
                   </Tooltip>
                   {formattedDate && <p className=" text-[11px] sm:text-sm truncate">{formattedDate}</p>}
                 </div>
@@ -243,14 +242,14 @@ const SingleBlog = () => {
                         }
                       }}
                     >
-                      <a href={`/profile/${blog?.author?._id}/${slugify(blog?.author?.name)}`} className="text-[#b8004e] transition-colors duration-200 cursor-pointer truncate ml-1">{blog?.author?.name}</a>
+                      <Link to={`/profile/${blog?.author?.username}`} className="text-[#b8004e] transition-colors duration-200 cursor-pointer truncate ml-1">{blog?.author?.name}</Link>
                     </Tooltip>
                   </h3>
                   {(isAuthenticated && userInfo?._id !== blog?.author?._id) && (
                     <button
                       onClick={handleFollow}
                       disabled={followLoading}
-                      className={`px-4 sm:px-6 py-1 sm:py-1.5 text-xs sm:text-sm font-bold rounded-full transition-all duration-300 shrink-0 ${isFollowingAuthor ? 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-red-50 hover:text-red-500 border border-gray-200 dark:border-gray-700' : 'bg-[#b8004e] text-white hover:bg-[#d81b60] shadow-sm'}`}
+                      className={`px-4 sm:px-6 py-1 sm:py-1.5 text-xs sm:text-sm font-bold rounded-full transition-all duration-300 shrink-0 ${isFollowingAuthor ? 'bg-[#b8004e]/10 border border-[#b8004e]/20 text-[#b8004e] hover:bg-[#b8004e]/20 hover:border-[#b8004e]/30' : 'bg-transparent border border-[#b8004e] text-[#b8004e] hover:bg-[#b8004e] hover:text-white shadow-sm'}`}
                     >
                       {isFollowingAuthor ? 'Following' : 'Follow'}
                     </button>
@@ -260,14 +259,14 @@ const SingleBlog = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                 {moreBlogs.map(b => (
-                  <a href={`/blogs/${b?._id}/${slugify(b?.title)}`} key={b?._id} className="group flex flex-col gap-3">
+                  <Link to={`/blogs/${b?.slug}`} key={b?._id} className="group flex flex-col gap-3">
                     <div className="w-full aspect-[4/3] rounded-[20px] overflow-hidden shadow-sm">
                       <img src={b?.coverImage} alt={b?.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
                     </div>
                     <div className="mt-2">
                       <h3 className="font-bold text-[17px] leading-snug line-clamp-2 group-hover:text-[#b8004e] transition-colors duration-300">{b?.title}</h3>
                     </div>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>

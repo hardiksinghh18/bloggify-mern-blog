@@ -1,13 +1,48 @@
 require('dotenv').config();
 const mongoose = require('mongoose')
-const validator = require('validator')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+
+const slugify = require('../utils/slugify')
+
+async function generateUniqueUsername(email, name, userId = null) {
+  let baseUsername = "";
+  if (email) {
+    baseUsername = email.split('@')[0].toLowerCase().replace(/[^\w.-]+/g, '');
+  }
+  if (!baseUsername && name) {
+    baseUsername = slugify(name);
+  }
+  if (!baseUsername) {
+    baseUsername = "user";
+  }
+  
+  let username = baseUsername;
+  let counter = 1;
+  
+  while (true) {
+    const query = { username };
+    if (userId) {
+      query._id = { $ne: userId };
+    }
+    const existingUser = await mongoose.models.Register.findOne(query);
+    if (!existingUser) {
+      return username;
+    }
+    username = `${baseUsername}-${counter}`;
+    counter++;
+  }
+}
 
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
+    },
+    username: {
+        type: String,
+        required: true,
+        unique: true
     },
     email: {
         type: String,
@@ -16,10 +51,12 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        required: true,
-        validate(email) {
-            validator.isEmail(email)
+        required: function() {
+            return !this.googleId;
         }
+    },
+    googleId: {
+        type: String
     },
     profileImage: {
         type: String
@@ -36,6 +73,13 @@ const userSchema = new mongoose.Schema({
         ref: 'Register'
     }]
 })
+
+userSchema.pre('validate', async function (next) {
+    if (this.email && (this.isModified('email') || !this.username)) {
+        this.username = await generateUniqueUsername(this.email, this.name, this._id);
+    }
+    next();
+});
 
 userSchema.methods.generateAuthToken = async function () {
     try {

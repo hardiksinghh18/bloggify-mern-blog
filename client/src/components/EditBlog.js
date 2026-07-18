@@ -34,7 +34,7 @@ const EditBlog = ({ singleBlog, editable, setEditable, handleEdit }) => {
         <div className='w-full min-h-screen bg-[#F8F9FA] dark:bg-[#121212] pb-20 transition-colors'>
             <div className="max-w-7xl mx-auto px-4 lg:px-8 py-10">
                 <form onSubmit={handleBlogUpdate} encType="multipart/form-data">
-                    
+
                     {/* Cover Photo Upload (UI Mockup) */}
                     <label htmlFor="file" className="relative w-full h-[300px] mb-12 bg-[#EFEFF3] dark:bg-gray-800 rounded-2xl flex flex-col justify-center items-center cursor-pointer overflow-hidden border-2 border-dashed border-transparent hover:border-gray-300 dark:hover:border-gray-600 transition-all shadow-sm">
                         {singleBlog?.coverImage ? (
@@ -46,7 +46,7 @@ const EditBlog = ({ singleBlog, editable, setEditable, handleEdit }) => {
                                         <path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6z" />
                                     </svg>
                                 </div>
-                                <p className="text-gray-800 dark:text-gray-200 font-bold mb-1 text-lg">Tap to add cover photo</p>
+                                <p className="text-gray-800 dark:text-gray-200 font-bold mb-1 text-lg">Tap to add cover image</p>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm">Recommended size: 1600x900px</p>
                             </div>
                         )}

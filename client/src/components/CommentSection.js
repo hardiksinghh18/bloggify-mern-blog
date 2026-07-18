@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from '../features/auth/authSlice';
@@ -8,7 +9,7 @@ import { FaHeart, FaRegHeart } from "react-icons/fa";
 import { Tooltip } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import { useGetCommentsQuery, useAddCommentMutation, useDeleteCommentMutation, useToggleLikeCommentMutation } from '../features/comments/commentsApiSlice';
-import { slugify } from '../Utils/slugify'
+
 
 const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
     const userInfo = useSelector(selectUserInfo);
@@ -112,6 +113,8 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
                         loading={commentLoading}
                         variant="contained"
                         type="submit"
+                        disabled={newComment.trim() === ''}
+                        className="bg-[#b8004e] text-white hover:bg-[#9a0042] transition-colors"
                         sx={{ 
                             textTransform: 'none', 
                             borderRadius: '999px', 
@@ -120,7 +123,11 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
                             px: 4,
                             py: 1,
                             fontWeight: 600,
-                            "&:hover": { backgroundColor: "#9a0042" }
+                            "&:hover": { backgroundColor: "#9a0042" },
+                            "&.Mui-disabled": {
+                                backgroundColor: 'rgba(184, 0, 78, 0.12) !important',
+                                color: 'rgba(184, 0, 78, 0.4) !important'
+                            }
                         }}
                     >
                         Comment
@@ -136,13 +143,13 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
 
 
                         <div key={index} className="rounded-md py-4 flex w-full border-b border-gray-100 dark:border-gray-800/50 mt-2 mb-2 pb-6 last:border-0">
-                            <a href={`/profile/${comment?.userId?._id}/${slugify(comment?.userId?.name)}`} className='relative flex items-start justify-center pt-1 shrink-0 z-10'>
+                            <Link to={`/profile/${comment?.userId?.username}`} className='relative flex items-start justify-center pt-1 shrink-0 z-10'>
                                 <img
                                     src={comment?.userId?.profileImage ? comment?.userId?.profileImage : defaultProfile}
                                     alt="Profile"
                                     className="h-10 w-10 mr-4 rounded-full object-cover shadow-sm bg-gray-50 dark:bg-[#1a1a1a]"
                                 />
-                            </a>
+                            </Link>
                             <div className="flex flex-col items-start mx-0 w-full relative">
                                 {/* Flawless dynamic track line extending from avatar to bottom toggle button */}
                                 {getReplies(comment?._id)?.length > 0 && (
@@ -151,7 +158,7 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
                                 <div className="flex items-center justify-between w-full mb-1">
                                     <div className="flex items-center gap-2 min-w-0">
                                         <Tooltip title={comment?.username?.length > 15 ? comment?.username : ""} arrow placement="top">
-                                            <a href={`/profile/${comment?.userId?._id}/${slugify(comment?.userId?.name)}`} className="text-sm text-gray-500 dark:text-gray-400 font-bold truncate max-w-[120px]">{comment?.username}</a>
+                                            <Link to={`/profile/${comment?.userId?.username}`} className="text-sm text-gray-500 dark:text-gray-400 font-bold truncate max-w-[120px]">{comment?.username}</Link>
                                         </Tooltip>
                                         
                                         {(comment?.isLikedByAuthor || userInfo?._id === blogAuthorId) && (
@@ -198,7 +205,20 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
                                         <LoadingButton
                                             loading={commentLoading}
                                             type="submit"
-                                            sx={{ minWidth: "auto", p: 1, backgroundColor: '#b8004e', color: "white", "&:hover": { backgroundColor: "#9a0042" }, borderRadius: '999px' }}
+                                            disabled={replyText.trim() === ''}
+                                            className="bg-[#b8004e] text-white hover:bg-[#9a0042] transition-colors"
+                                            sx={{ 
+                                                minWidth: "auto", 
+                                                p: 1, 
+                                                backgroundColor: '#b8004e', 
+                                                color: "white", 
+                                                "&:hover": { backgroundColor: "#9a0042" }, 
+                                                borderRadius: '999px',
+                                                "&.Mui-disabled": {
+                                                    backgroundColor: 'rgba(184, 0, 78, 0.12) !important',
+                                                    color: 'rgba(184, 0, 78, 0.4) !important'
+                                                }
+                                            }}
                                         >
                                             <SendIcon fontSize="small" />
                                         </LoadingButton>
@@ -211,7 +231,7 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
                                             <div className="w-full relative pt-2 pb-1">
                                                 <div className="absolute top-0 -left-[36px] w-[50px] h-[24px] rounded-bl-[16px] border-l-[2px] border-b-[2px] border-transparent border-l-gray-300 border-b-gray-300 dark:border-l-gray-700 dark:border-b-gray-700 pointer-events-none z-10" />
                                                 <div
-                                                    className="flex items-center cursor-pointer text-[#065fd4] dark:text-[#3ea6ff] text-[13px] font-bold hover:bg-blue-500/10 px-4 py-2 w-max rounded-full transition-colors relative z-20 bg-gray-50 dark:bg-[#1a1a1a]"
+                                                    className="flex items-center cursor-pointer text-[#b8004e] dark:text-[#d81b60] text-[13px] font-bold hover:bg-[#b8004e]/10 px-4 py-2 w-max rounded-full transition-colors relative z-20 bg-gray-50 dark:bg-[#1a1a1a]"
                                                     onClick={() => toggleReplies(comment?._id)}
                                                 >
                                                     <span className="mr-2">▿</span> {getReplies(comment?._id).length} replies
@@ -226,17 +246,17 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
                                                             {/* Branch curve into this individual reply */}
                                                             <div className="absolute top-0 -left-[36px] w-[36px] h-[20px] rounded-bl-[16px] border-l-[2px] border-b-[2px] border-transparent border-l-gray-300 border-b-gray-300 dark:border-l-gray-700 dark:border-b-gray-700 pointer-events-none z-0" />
                                                             
-                                                            <a href={`/profile/${reply?.userId?._id}/${slugify(reply?.userId?.name)}`} className='relative flex items-start justify-center shrink-0 z-10'>
+                                                            <Link to={`/profile/${reply?.userId?.username}`} className='relative flex items-start justify-center shrink-0 z-10'>
                                                                 <img
                                                                     src={reply?.userId?.profileImage ? reply?.userId?.profileImage : defaultProfile}
                                                                     alt="Profile"
                                                                     className="h-6 w-6 mr-3 rounded-full object-cover shadow-sm bg-gray-50 dark:bg-[#1a1a1a]"
                                                                 />
-                                                            </a>
+                                                            </Link>
                                                             <div className="flex flex-col items-start mx-0 w-full relative">
                                                                 <div className="flex items-center justify-between w-full mb-1">
                                                                     <div className="flex items-center gap-2">
-                                                                        <a href={`/profile/${reply?.userId?._id}/${slugify(reply?.userId?.name)}`} className="text-[13px] text-gray-500 dark:text-gray-400 font-bold">{reply?.username}</a>
+                                                                        <Link to={`/profile/${reply?.userId?.username}`} className="text-[13px] text-gray-500 dark:text-gray-400 font-bold">{reply?.username}</Link>
                                                                         {(reply?.isLikedByAuthor || userInfo?._id === blogAuthorId) && (
                                                                             <div className="cursor-pointer flex items-center transition-colors" onClick={() => toggleLike(reply?._id)}>
                                                                                 {reply?.isLikedByAuthor ? (
@@ -268,7 +288,7 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
                                                 <div className="w-full relative pt-2 pb-1 mt-1">
                                                     <div className="absolute top-0 -left-[36px] w-[50px] h-[24px] rounded-bl-[16px] border-l-[2px] border-b-[2px] border-transparent border-l-gray-300 border-b-gray-300 dark:border-l-gray-700 dark:border-b-gray-700 pointer-events-none z-10" />
                                                     <div
-                                                        className="flex items-center cursor-pointer text-[#065fd4] dark:text-[#3ea6ff] text-[13px] font-bold hover:bg-blue-500/10 px-4 py-2 w-max rounded-full transition-colors relative z-20 bg-gray-50 dark:bg-[#1a1a1a]"
+                                                        className="flex items-center cursor-pointer text-[#b8004e] dark:text-[#d81b60] text-[13px] font-bold hover:bg-[#b8004e]/10 px-4 py-2 w-max rounded-full transition-colors relative z-20 bg-gray-50 dark:bg-[#1a1a1a]"
                                                         onClick={() => toggleReplies(comment?._id)}
                                                     >
                                                         <span className="mr-2">▵</span> Hide replies

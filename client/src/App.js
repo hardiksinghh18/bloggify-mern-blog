@@ -38,8 +38,8 @@ function App() {
             <Route path="/login" element={<Enter />} />
             <Route path="/blogs" element={<Dashboard />} />
             <Route path="/newpost" element={<CreatePost />} />
-            <Route path='/blogs/:id/:title' element={<SingleBlog />} />
-            <Route path='/profile/:id/:name' element={<UserProfile />} />
+            <Route path='/blogs/:slug' element={<SingleBlog />} />
+            <Route path='/profile/:username' element={<UserProfile />} />
           </Routes>
         </main>
         <Footer />

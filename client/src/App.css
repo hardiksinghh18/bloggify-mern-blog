@@ -19,9 +19,9 @@
     --input-bg: #f2f2f2;
     --input-border: #cccccc;
     --input-text: #333333;
-    --button-bg: #0078d4;
+    --button-bg: #b8004e;
     --button-text: #ffffff;
-    --button-hover-bg: #005ea2;
+    --button-hover-bg: #9a0042;
     --label-color: #555555;
     --profile-bg: #ffffff;
     --profile-border: #e0e0e0;
@@ -40,9 +40,9 @@
     --input-bg: #2b2b2b;
     --input-border: #444444;
     --input-text: #ffffff;
-    --button-bg: #3b82f6;
+    --button-bg: #b8004e;
     --button-text: #ffffff;
-    --button-hover-bg: #1d4ed8;
+    --button-hover-bg: #9a0042;
     --label-color: #cccccc;
     --profile-bg: #1e1e1e;
     --profile-border: #333333;
@@ -92,9 +92,6 @@ body::-webkit-scrollbar-thumb {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-.relativeProfile:hover .absoluteProfile {
-    display: block;
-}
 
 .signup_page {
     display: flex;
@@ -233,6 +230,15 @@ button.MuiLoadingButton-root:hover {
 .form_container button.hiddennew {
     background-color: transparent;
     border-color: var(--text-color);
+}
+
+.form_container form button {
+    background-color: rgb(40, 40, 40);
+    color: #ffffff;
+}
+
+.form_container form button:hover {
+    background-color: rgb(29, 29, 29);
 }
 
 .form_container form {
