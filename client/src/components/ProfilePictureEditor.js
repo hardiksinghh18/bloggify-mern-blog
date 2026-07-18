@@ -30,29 +30,51 @@ const ProfilePictureEditor = (props) => {
   };
 
   return (
-    <form onSubmit={handleSave} encType="multipart/form-data" className="flex flex-col items-center mt-8">
-      <AvatarEditor
-        ref={setEditor}
-        image={image}
-        width={150}
-        height={150}
-        border={50}
-        borderRadius={125}
-        color={[255, 255, 255, 0.6]}
-        scale={1.2}
-        rotate={0}
-      />
+    <form onSubmit={handleSave} encType="multipart/form-data" className="flex flex-col items-center mt-2 w-full">
+      <h2 className="text-lg font-bold mb-5 text-gray-900 dark:text-gray-100">Update Profile Picture</h2>
+      
+      <div className="overflow-hidden rounded-3xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-zinc-800/30 p-1 mb-5 flex justify-center items-center shadow-inner">
+        <AvatarEditor
+          ref={setEditor}
+          image={image}
+          width={180}
+          height={180}
+          border={30}
+          borderRadius={90}
+          color={[18, 18, 18, 0.7]}
+          scale={1.2}
+          rotate={0}
+        />
+      </div>
+
+      <label 
+        htmlFor="profile-upload" 
+        className="flex items-center justify-center gap-2 text-xs font-semibold px-4 py-2.5 border border-dashed border-gray-300 dark:border-gray-700 rounded-xl hover:border-[#b8004e] hover:text-[#b8004e] transition-colors cursor-pointer w-full text-center max-w-[240px] truncate"
+      >
+        <i className='bx bx-upload text-sm'></i>
+        {image && typeof image !== 'string' ? image.name : 'Choose Image'}
+      </label>
       <input
         type="file"
+        id="profile-upload"
         onChange={(e) => setImage(e.target.files[0])}
         accept="image/*"
-        className="   pl-32 text-xs  px-8  max-w-fit  overflow-hidden  p-2 "
+        className="hidden"
       />
-      <LoadingButton
 
+      <LoadingButton
         loading={uploadLoading}
         type='submit'
-        className="mt-4 bg-zinc-900 text-xs text-white px-4 hover:bg-blue-600"
+        className="mt-6 w-full bg-[#b8004e] hover:bg-[#9a0042] text-white text-xs font-bold py-2.5 rounded-xl transition-all shadow-sm"
+        sx={{
+          textTransform: 'none',
+          fontFamily: 'inherit',
+          fontWeight: 700,
+          bgcolor: '#b8004e',
+          color: '#ffffff',
+          width: '100%',
+          '&:hover': { bgcolor: '#9a0042' }
+        }}
       >
         Save Profile Picture
       </LoadingButton>

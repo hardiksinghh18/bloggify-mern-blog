@@ -7,7 +7,7 @@ const useShareBlog = () => {
             e.stopPropagation();
         }
 
-        const blogUrl = `${window.location.origin}/blogs/${blog?._id}/${blog?.title}`;
+        const blogUrl = `${window.location.origin}/blogs/${blog?.slug}`;
         const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent);
 
         if (isMobile && navigator.share) {

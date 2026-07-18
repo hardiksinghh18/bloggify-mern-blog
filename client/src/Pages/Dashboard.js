@@ -129,6 +129,13 @@ const Dashboard = () => {
                           sx={{
                             '& .MuiPaginationItem-root': {
                               color: 'inherit',
+                            },
+                            '& .MuiPaginationItem-root.Mui-selected': {
+                              backgroundColor: '#b8004e !important',
+                              color: '#ffffff !important',
+                              '&:hover': {
+                                backgroundColor: '#9a0042 !important',
+                              }
                             }
                           }}
                         />

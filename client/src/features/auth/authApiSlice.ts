@@ -11,6 +11,10 @@ interface RegisterRequest {
     password: string;
 }
 
+interface GoogleLoginRequest {
+    token: string;
+}
+
 interface AuthResponse {
     Login?: boolean;
     valid?: boolean;
@@ -37,6 +41,15 @@ export const authApiSlice = apiSlice.injectEndpoints({
             invalidatesTags: ['Auth'],
         }),
 
+        googleLogin: builder.mutation<AuthResponse, GoogleLoginRequest>({
+            query: (credentials) => ({
+                url: '/google-login',
+                method: 'POST',
+                body: credentials,
+            }),
+            invalidatesTags: ['Auth'],
+        }),
+
         logout: builder.mutation<AuthResponse, void>({
             query: () => ({
                 url: '/logout',
@@ -52,4 +65,4 @@ export const authApiSlice = apiSlice.injectEndpoints({
     }),
 });
 
-export const { useLoginMutation, useRegisterMutation, useLogoutMutation, useGetMeQuery } = authApiSlice;
+export const { useLoginMutation, useRegisterMutation, useLogoutMutation, useGetMeQuery, useGoogleLoginMutation } = authApiSlice;

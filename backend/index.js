@@ -12,7 +12,10 @@ const Comment = require('./models/commentsmodel')
 const Blog = require('./models/blogs')
 const verifyuser = require('./middleware/verifyuser')
 const bcrypt = require('bcryptjs')
+const { OAuth2Client } = require('google-auth-library');
 const app = express()
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const PORT = process.env.PORT || 5000
 const cookieParser = require('cookie-parser')
@@ -109,6 +112,51 @@ app.post('/login', async (req, res) => {
     }
 })
 
+app.post('/google-login', async (req, res) => {
+    try {
+        const { token } = req.body;
+
+        const ticket = await client.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const { sub: googleId, email, name, picture } = payload;
+
+        let userDetails = await Register.findOne({ email: email });
+
+        if (!userDetails) {
+            // Create a new user if one doesn't exist
+            userDetails = new Register({
+                name: name,
+                email: email,
+                googleId: googleId,
+                profileImage: picture
+                // Password is omitted and allowed due to usermodel changes
+            });
+            await userDetails.save();
+        } else if (!userDetails.googleId) {
+            // Update existing user with googleId if they login with Google for the first time
+            userDetails.googleId = googleId;
+            await userDetails.save();
+        }
+
+        const authToken = await userDetails.generateAuthToken();
+        const refreshToken = await userDetails.generateRefreshToken();
+
+        return res
+            .status(200)
+            .cookie('accessToken', authToken, accessCookieOptions)
+            .cookie('refreshToken', refreshToken, refreshCookieOptions)
+            .json({ Login: true, message: 'Google login successful', user: userDetails });
+
+    } catch (error) {
+        console.error('Google login error:', error);
+        res.status(500).json({ Login: false, error: 'Google authentication failed' });
+    }
+});
+
 app.get('/dashboard', verifyuser, async (req, res) => {
     try {
         const userEmail = req.email
@@ -125,12 +173,12 @@ app.get('/dashboard', verifyuser, async (req, res) => {
         const totalBlogs = await Blog.countDocuments({});
         const userDetails = await Register.findOne({ email: userEmail });
 
-        return res.json({ 
-            valid: true, 
-            user: userDetails, 
-            allBlogs: allBlogs, 
+        return res.json({
+            valid: true,
+            user: userDetails,
+            allBlogs: allBlogs,
             totalBlogs: totalBlogs,
-            message: "authorized" 
+            message: "authorized"
         })
     } catch (error) {
         console.log('error in dashboard', error)
@@ -174,7 +222,7 @@ app.get('/blogs', async (req, res) => {
 app.get('/trending', async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 5;
-        
+
         const trendingBlogs = await Blog.aggregate([
             // Calculate basic counts and engagement score
             {
@@ -195,10 +243,16 @@ app.get('/trending', async (req, res) => {
                     from: "comments",
                     let: { blogId: "$_id" },
                     pipeline: [
-                        { $match: { $expr: { $and: [
-                            { $eq: ["$blogId", "$$blogId"] },
-                            { $eq: ["$parentCommentId", null] }
-                        ] } } },
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$blogId", "$$blogId"] },
+                                        { $eq: ["$parentCommentId", null] }
+                                    ]
+                                }
+                            }
+                        },
                         { $count: "count" }
                     ],
                     as: "comments"
@@ -368,21 +422,21 @@ app.post('/dislikeblog', verifyuser, async (req, res) => {
     }
 });
 
-app.get('/blog/:id', async (req, res) => {
+app.get('/blog/:slug', async (req, res) => {
     try {
-        const { id } = req.params;
-        const blog = await Blog.findById(id).populate('author', 'name profileImage email');
+        const { slug } = req.params;
+        const blog = await Blog.findOne({ slug }).populate('author', 'name profileImage email username');
         if (!blog) {
             return res.status(404).json({ message: 'Blog not found' });
         }
 
-        const moreFromAuthor = await Blog.find({ 
-            author: blog.author._id, 
-            _id: { $ne: blog._id } 
+        const moreFromAuthor = await Blog.find({
+            author: blog.author._id,
+            _id: { $ne: blog._id }
         })
-        .select('title coverImage category createdAt author')
-        .populate('author', 'name profileImage')
-        .limit(3);
+            .select('title coverImage category createdAt author')
+            .populate('author', 'name profileImage username')
+            .limit(3);
 
         return res.json({ blog, moreFromAuthor, valid: true });
     } catch (error) {
@@ -454,11 +508,11 @@ app.get('/profile', verifyuser, async (req, res) => {
 
 app.post('/profile', async (req, res) => {
     try {
-        const { id } = req.body
-        const userDetails = await Register.findOne({ _id: id })
+        const { username } = req.body
+        const userDetails = await Register.findOne({ username })
             .select('-password')
-            .populate('followers', 'name profileImage')
-            .populate('following', 'name profileImage');
+            .populate('followers', 'name profileImage username')
+            .populate('following', 'name profileImage username');
 
         if (!userDetails) return res.status(404).json({ message: 'User not found' });
 
@@ -497,7 +551,7 @@ app.post('/follow', verifyuser, async (req, res) => {
     try {
         const { targetUserId } = req.body;
         const currentUserEmail = req.email;
-        
+
         const currentUser = await Register.findOne({ email: currentUserEmail });
         const targetUser = await Register.findById(targetUserId);
 

@@ -14,6 +14,7 @@ export function useThemeSwitch() {
       document.documentElement.setAttribute("data-theme", "light");
     }
     window.localStorage.setItem(storageKey, theme);
+    window.dispatchEvent(new Event('themeChange'));
   };
 
   const getUserPreference = () => {
@@ -41,6 +42,12 @@ export function useThemeSwitch() {
     return () => {
       mediaQuery.removeEventListener("change", handleChange);
     };
+  }, []);
+
+  useEffect(() => {
+    const syncTheme = () => setMode(getUserPreference());
+    window.addEventListener('themeChange', syncTheme);
+    return () => window.removeEventListener('themeChange', syncTheme);
   }, []);
 
   useEffect(() => {

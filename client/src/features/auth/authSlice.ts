@@ -4,6 +4,7 @@ interface UserInfo {
     _id: string;
     name: string;
     email: string;
+    username?: string;
     bio?: string;
     profileImage?: string;
 }

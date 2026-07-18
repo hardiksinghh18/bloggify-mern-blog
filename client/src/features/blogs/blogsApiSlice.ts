@@ -14,6 +14,7 @@ interface Blog {
         _id: string;
         name: string;
         email: string;
+        username?: string;
         profileImage?: string;
     };
 }
@@ -33,6 +34,7 @@ interface DashboardResponse {
         _id: string;
         name: string;
         email: string;
+        username?: string;
         bio?: string;
         profileImage?: string;
     };
@@ -112,8 +114,8 @@ export const blogsApiSlice = apiSlice.injectEndpoints({
         }),
 
         getSingleBlog: builder.query<SingleBlogResponse, string>({
-            query: (id) => `/blog/${id}`,
-            providesTags: (result, error, id) => [{ type: 'Blog', id }],
+            query: (slug) => `/blog/${slug}`,
+            providesTags: (result, error, slug) => [{ type: 'Blog', id: slug }],
         }),
 
         createPost: builder.mutation<AuthCheckResponse, FormData>({

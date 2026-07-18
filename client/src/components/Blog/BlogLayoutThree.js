@@ -1,9 +1,10 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import { Tooltip } from '@mui/material'
 import defaultProfile from '../../images/defaultProfile.jpg'
 import { useGetCommentsQuery } from '../../features/comments/commentsApiSlice'
 import useShareBlog from '../../hooks/useShareBlog'
-import { slugify } from '../../Utils/slugify'
+
 
 const BlogLayoutThree = ({ blog }) => {
     const authorName = blog?.author?.name || 'Anonymous';
@@ -55,22 +56,22 @@ const BlogLayoutThree = ({ blog }) => {
                         }}
                     >
                         <p className="text-sm font-medium opacity-80 max-w-[150px] sm:max-w-[200px] truncate">
-                            <a href={`/profile/${blog?.author?._id}/${slugify(blog?.author?.name)}`} className="font-medium hover:underline">
+                            <Link to={`/profile/${blog?.author?.username}`} className="font-medium hover:underline">
                                 {authorName}
-                            </a>
+                            </Link>
                         </p>
                     </Tooltip>
                 </div>
 
                 {/* Title & Summary */}
-                <a href={`/blogs/${blog?._id}/${slugify(blog?.title)}`} className="group block">
+                <Link to={`/blogs/${blog?.slug}`} className="group block">
                     <h2 className="text-2xl sm:text-[28px] font-extrabold leading-tight mb-2">
                         {blog?.title}
                     </h2>
                     <p className="text-base sm:text-[17px] mb-4 overflow-hidden text-ellipsis line-clamp-2 opacity-80 break-all" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                         {blog?.summary}
                     </p>
-                </a>
+                </Link>
 
                 {/* Meta details */}
                 <div className="flex flex-wrap items-center justify-between gap-y-2 gap-x-4 mt-auto w-full pt-2">
@@ -109,9 +110,9 @@ const BlogLayoutThree = ({ blog }) => {
             </div>
 
             {/* Thumbnail */}
-            <a href={`/blogs/${blog?._id}/${slugify(blog?.title)}`} className="shrink-0 w-full sm:w-[240px] md:w-[280px] h-[160px] cursor-pointer">
+            <Link to={`/blogs/${blog?.slug}`} className="shrink-0 w-full sm:w-[240px] md:w-[280px] h-[160px] cursor-pointer">
                 <img src={blog?.coverImage} alt={blog?.title} className="w-full h-full object-cover sm:rounded-md rounded-none hover:opacity-90 transition-opacity" />
-            </a>
+            </Link>
         </div>
     )
 }
