@@ -1,5 +1,42 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
 
+@keyframes gearRotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.gear-spin {
+  animation: gearRotate 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+}
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(20px, -20px) scale(1.08); }
+  66%       { transform: translate(-15px, 15px) scale(0.94); }
+}
+
+@keyframes blobFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%       { transform: translate(-25px, 15px) scale(1.06); }
+  66%       { transform: translate(18px, -18px) scale(0.96); }
+}
+
+@keyframes lockPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(184,0,78,0.35); }
+  50%       { box-shadow: 0 0 0 14px rgba(184,0,78,0); }
+}
+
+.blob-1 {
+  animation: blobFloat 7s ease-in-out infinite;
+}
+.blob-2 {
+  animation: blobFloat2 9s ease-in-out infinite;
+}
+.lock-pulse {
+  animation: lockPulse 2.4s ease-in-out infinite;
+}
+
 * {
     margin: 0;
     padding: 0;

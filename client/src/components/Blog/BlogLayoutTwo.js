@@ -1,13 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import defaultProfile from '../../images/defaultProfile.jpg'
-
+import { getProfileImage } from '../../Utils'
 
 const BlogLayoutTwo = ({ blog }) => {
     const date = new Date(blog?.createdAt)
     const options = { month: 'short', day: 'numeric', year: 'numeric' };
     const formattedDate = blog?.createdAt ? date.toLocaleDateString('en-US', options) : '';
-    const profileImageUrl = blog?.author?.profileImage || defaultProfile;
+    const profileImageUrl = getProfileImage(blog?.author?.profileImage, defaultProfile);
 
     return (
         <Link to={`/blogs/${blog?.slug}`} className="group flex gap-5 items-start p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200">
@@ -25,7 +25,7 @@ const BlogLayoutTwo = ({ blog }) => {
                 </h2>
 
                 <div className="flex items-center gap-2 mt-2">
-                    <img src={profileImageUrl} alt={blog?.author?.name} className="w-5 h-5 rounded-full object-cover" />
+                    <img src={profileImageUrl} alt={blog?.author?.name} referrerPolicy="no-referrer" className="w-5 h-5 rounded-full object-cover" />
                     <span className="text-xs font-medium opacity-70">{blog?.author?.name}</span>
                     <span className="text-xs opacity-50">·</span>
                     <span className="text-xs opacity-50">{formattedDate}</span>

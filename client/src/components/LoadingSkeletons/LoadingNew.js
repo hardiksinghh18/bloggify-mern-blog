@@ -34,7 +34,7 @@ const SkeletonRow = () => (
 
 const LoadingNew = () => {
   return (
-    <div className='w-full max-w-5xl flex flex-col px-4 sm:px-8 lg:px-16 my-8 mx-auto'>
+    <div className='w-full max-w-6xl flex flex-col px-4 sm:px-8 lg:px-16 my-8 mx-auto'>
       {/* Header */}
       <div className="w-32 h-7 rounded bg-gray-300 dark:bg-gray-400 my-4 animate-pulse"></div>
       <div className="w-full h-px bg-gray-200 dark:bg-gray-400 mb-2"></div>

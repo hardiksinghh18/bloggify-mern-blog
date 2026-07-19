@@ -23,7 +23,7 @@ const BlogRowSkeleton = () => (
 
 const LoadingSkeleton = () => {
     return (
-        <div className="w-full max-w-5xl mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12 animate-pulse">
+        <div className="w-full max-w-6xl mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12 animate-pulse">
 
             {/* Profile Header Skeleton */}
             <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 pb-8 border-b border-gray-200 dark:border-gray-800">

@@ -7,12 +7,11 @@ import BlogLayoutThree from '../components/Blog/BlogLayoutThree'
 import LoadingNew from '../components/LoadingSkeletons/LoadingNew'
 import { Pagination } from '@mui/material'
 
-
-const Dashboard = () => {
+const Explore: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('latest')
-  const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState<'latest' | 'trending'>('latest')
+  const [page, setPage] = useState<number>(1);
   const limit = 10;
 
   const { data, isLoading, isSuccess, isError } = useGetDashboardQuery({ page, limit });
@@ -54,18 +53,17 @@ const Dashboard = () => {
   const displayedBlogs = activeTab === 'latest' ? blogsData : trendingBlogs;
   const isTabLoading = activeTab === 'trending' && trendingLoading;
 
-  const handlePageChange = (event, value) => {
+  const handlePageChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
     <>
-
       {blogsData &&
-        <div className=' w-screen px-0 mx-0 flex flex-col items-center pb-16'>
+        <div className=' w-full px-0 mx-0 flex flex-col items-center pb-16'>
 
-          <div className='w-full max-w-5xl flex flex-col px-4 sm:px-8 lg:px-16 my-8 items-center mx-auto'>
+          <div className='w-full max-w-6xl flex flex-col px-4 sm:px-8 lg:px-16 my-8 items-center mx-auto'>
 
             {/* Tab Switcher */}
             <div className='w-full flex items-center gap-2 mb-8 border-b border-gray-200 dark:border-gray-800'>
@@ -112,7 +110,7 @@ const Dashboard = () => {
                 {displayedBlogs && displayedBlogs.length > 0 ? (
                   <>
                     <div className='flex flex-col w-full mb-8'>
-                      {displayedBlogs.map((blog) => (
+                      {displayedBlogs.map((blog: any) => (
                         <div key={blog?._id} className='w-full'>
                           <BlogLayoutThree blog={blog} />
                         </div>
@@ -153,9 +151,8 @@ const Dashboard = () => {
             )}
           </div>
         </div>}
-
     </>
   )
 }
 
-export default Dashboard
+export default Explore

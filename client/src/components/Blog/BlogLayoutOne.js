@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import defaultProfile from '../../images/defaultProfile.jpg'
-import { slugify } from '../../Utils/slugify'
+import { getProfileImage } from '../../Utils'
 
 const BlogLayoutOne = ({ blog }) => {
     const date = new Date(blog?.createdAt);
@@ -35,8 +35,9 @@ const BlogLayoutOne = ({ blog }) => {
                 <div className="mt-auto flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
                     <Link to={`/profile/${blog?.author?.username}`}>
                         <img 
-                            src={blog?.author?.profileImage || defaultProfile} 
+                            src={getProfileImage(blog?.author?.profileImage, defaultProfile)} 
                             alt={blog?.author?.name}
+                            referrerPolicy="no-referrer"
                             className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover"
                         />
                     </Link>

@@ -9,3 +9,10 @@ export const sortBlogs = (blogs) => {
       compareDesc(parseISO(a.publishedAt), parseISO(b.publishedAt))
     );
 };
+
+export const getProfileImage = (url, fallback) => {
+  if (!url || url === 'undefined' || url === 'null') {
+    return fallback;
+  }
+  return url;
+};

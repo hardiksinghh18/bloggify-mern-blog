@@ -13,8 +13,7 @@ import { useThemeSwitch } from '../hooks/useThemeSwitch'
 import { toast } from 'react-toastify';
 import { MdLightMode } from "react-icons/md";
 import { MdDarkMode } from "react-icons/md";
-
-
+import { getProfileImage } from '../Utils'
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -25,6 +24,7 @@ const Navbar = () => {
   const [logoutApi] = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -73,89 +73,227 @@ const Navbar = () => {
     }
   }
 
-  const profileImage = userInfo?.profileImage ? userInfo?.profileImage : defaultProfile
+  useEffect(() => {
+    const elements = [
+      document.querySelector('main'),
+      document.querySelector('footer')
+    ];
+    if (drawerOpen && window.innerWidth >= 640) {
+      elements.forEach(el => el?.classList.add('drawer-push-active'));
+    } else {
+      elements.forEach(el => el?.classList.remove('drawer-push-active'));
+    }
+    
+    return () => {
+      elements.forEach(el => el?.classList.remove('drawer-push-active'));
+    };
+  }, [drawerOpen]);
+
+  const profileImage = getProfileImage(userInfo?.profileImage, defaultProfile)
 
   return (
-
-    <header className=" px-0   mx-1 my-2  flex items-center justify-between  z-50 sm:mx-8 sm:py-1 ">
-
-      <a href='/'>
-        <img className='h-12 w-12' src={Logo} alt="" />
-      </a>
-
-
-      <nav className=" w-max py-3   px-3   border border-solid border-black rounded-full font-medium capitalize  items-center  flex text-xs
-    fixed top-2 right-1/2 translate-x-1/2 bg-light/80 backdrop-blur-sm z-50  sm:py-3 sm:px-8 sm:text-[1rem] sm:my-1 ">
-        <NavLink to="/" activeClassName="active" className="mr-2">Home</NavLink>
-
-        {isAuthenticated ? (
-          <div>
-            <NavLink to={'/blogs'} className="mx-2" activeclassname="active">Blogs</NavLink>
-            <NavLink to={'/newpost'} className="mx-2  " activeclassname="active" ><span>New</span> <i className='bx bxs-pencil mx-1'></i></NavLink>
-          </div>
-        ) : (<div>
-          <NavLink to={"/blogs"} className="mx-2 " activeclassname="active">Blogs</NavLink>
-          <NavLink to={"/login"} className="mx-2" activeclassname="active">Login</NavLink>
+    <>
+      <header className="sticky top-0 w-full bg-white/80 dark:bg-[#18181b]/80 backdrop-blur-md border-b border-gray-100 dark:border-zinc-800/80 px-6 sm:px-12 py-3 flex items-center justify-between z-50 transition-all duration-300 shadow-sm">
+        
+        {/* Logo & Brand Name */}
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => setDrawerOpen(!drawerOpen)}
+            className={`menu-toggle-btn text-gray-700 dark:text-zinc-300 ${drawerOpen ? 'open' : ''}`}
+            title={drawerOpen ? "Close Menu" : "Open Menu"}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          
+          <a href='/' className="flex items-center gap-2 group">
+            <img className='h-8 w-8 group-hover:scale-105 transition-transform duration-300' src={Logo} alt="Bloggify Logo" referrerPolicy="no-referrer" />
+            <span className="font-extrabold text-xl tracking-tight hidden sm:block bg-gradient-to-r from-[#b8004e] to-[#db2777] bg-clip-text text-transparent group-hover:opacity-95 transition-opacity">
+              Bloggify
+            </span>
+          </a>
         </div>
-        )}
-        <button className="theme-toggle-btn ml-4 text-lg" onClick={toggleTheme}>
-          {mode === "light" ? (<MdDarkMode />) : <MdLightMode />}
-        </button>
-      </nav>
 
-      <div className="sm:flex items-center relative" ref={menuRef}>
-        {userInfo && (
-          <div onClick={() => setMenuOpen(!menuOpen)} className="flex items-center hover:cursor-pointer relativeProfile ">
-            <img
-              src={profileImage}
-              alt="Profile"
-              className="h-8 w-8 mr-4 rounded-full"
-            />
-            <div className=' relative font-semibold '>
-              <p className='hidden  md:flex md:items-center min-w-0'>
-                <span className="truncate max-w-[120px]">{userInfo?.name}</span>
-                <span className={`text-xs mx-2 transition-transform duration-300 inline-block ${menuOpen ? 'rotate-180' : ''}`}><i className='bx bxs-down-arrow'></i></span>
-              </p>
-              {menuOpen && (
-                <div
-                  onClick={(e) => e.stopPropagation()}
-                  className="absoluteProfile absolute z-50 flex flex-col p-2.5 border rounded-2xl top-full right-0 mt-3 min-w-[240px] bg-white dark:bg-[#1a1a1a] border-gray-100 dark:border-zinc-800/80 shadow-2xl shadow-gray-200/50 dark:shadow-none"
-                >
-                  {/* User Profile Info Header inside Card */}
-                  <div className="flex items-center gap-3 px-3 py-3 border-b border-gray-100 dark:border-zinc-800/80 mb-2">
-                    <img
-                      src={profileImage}
-                      alt="User Profile"
-                      className="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-zinc-800"
-                    />
-                    <div className="flex flex-col min-w-0 text-left">
-                      <span className="text-[14px] font-bold text-gray-900 dark:text-white truncate">{userInfo?.name}</span>
-                      <span className="text-[11px] font-medium text-gray-400 dark:text-zinc-500 truncate">{userInfo?.email}</span>
+        {/* Navigation Controls */}
+        <div className="flex items-center gap-3 sm:gap-6">
+
+          {isAuthenticated ? (
+            <NavLink 
+              to="/newpost" 
+              activeclassname="active" 
+              className="flex items-center gap-1.5 text-[13px] font-bold border border-[#b8004e]/20 dark:border-pink-500/30 bg-[#b8004e]/10 dark:bg-pink-500/10 text-[#b8004e] dark:text-pink-400 hover:bg-[#b8004e]/20 dark:hover:bg-pink-500/20 px-3 sm:px-4 py-1.5 rounded-full transition-all duration-300 transform active:scale-95 shadow-sm"
+            >
+              <i className='bx bx-edit-alt text-base'></i>
+              <span className="hidden sm:inline">Write</span>
+            </NavLink>
+          ) : (
+            <NavLink 
+              to="/login" 
+              activeclassname="active" 
+              className="text-[14px] font-semibold text-gray-600 dark:text-zinc-300 hover:text-[#b8004e] dark:hover:text-pink-400 transition-colors"
+            >
+              Login
+            </NavLink>
+          )}
+
+          {/* Theme switch */}
+          <button 
+            className="theme-toggle-btn text-[17px] text-gray-600 dark:text-zinc-300 hover:text-[#b8004e] dark:hover:text-pink-400 transition-colors flex items-center hover:scale-110 active:scale-95 duration-200" 
+            onClick={toggleTheme}
+          >
+            {mode === "light" ? <MdDarkMode /> : <MdLightMode />}
+          </button>
+
+          {/* Profile Dropdown */}
+          {userInfo && (
+            <div className="flex items-center relative" ref={menuRef}>
+              <div 
+                onClick={() => setMenuOpen(!menuOpen)} 
+                className="flex items-center hover:cursor-pointer relativeProfile"
+              >
+                <img
+                  src={profileImage}
+                  alt="Profile"
+                  referrerPolicy="no-referrer"
+                  className="h-8 w-8 rounded-full border border-gray-100 dark:border-zinc-800 object-cover"
+                />
+                <div className="relative font-semibold ml-2">
+                  <p className="hidden md:flex md:items-center min-w-0">
+                    <span className="truncate max-w-[120px] text-sm text-gray-700 dark:text-zinc-300">{userInfo?.name}</span>
+                    <span className={`text-xs ml-1 transition-transform duration-300 inline-block ${menuOpen ? 'rotate-180' : ''}`}>
+                      <i className='bx bxs-down-arrow text-[10px] text-gray-400'></i>
+                    </span>
+                  </p>
+                  {menuOpen && (
+                    <div
+                      onClick={(e) => e.stopPropagation()}
+                      className="absoluteProfile absolute z-50 flex flex-col p-2.5 border rounded-2xl top-full right-0 mt-3 min-w-[240px] bg-white dark:bg-[#1a1a1a] border-gray-100 dark:border-zinc-800/80 shadow-2xl shadow-gray-200/50 dark:shadow-none animate-dropdown-in"
+                    >
+                      {/* User Profile Info Header inside Card */}
+                      <div className="flex items-center gap-3 px-3 py-3 border-b border-gray-100 dark:border-zinc-800/80 mb-2">
+                        <img
+                          src={profileImage}
+                          alt="User Profile"
+                          referrerPolicy="no-referrer"
+                          className="w-10 h-10 rounded-full object-cover border border-gray-100 dark:border-zinc-800"
+                        />
+                        <div className="flex flex-col min-w-0 text-left">
+                          <span className="text-[14px] font-bold text-gray-900 dark:text-white truncate">{userInfo?.name}</span>
+                          <span className="text-[11px] font-medium text-gray-400 dark:text-zinc-500 truncate">{userInfo?.email}</span>
+                        </div>
+                      </div>
+
+                      {/* Menu Items */}
+
+                      <Link
+                        to={`/profile/${userInfo?.username}`}
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 hover:text-[#b8004e] dark:hover:text-[#d81b60] transition-all group"
+                      >
+                        <i className='bx bx-user text-[18px] text-gray-400 group-hover:text-[#b8004e] dark:group-hover:text-[#d81b60] transition-colors'></i>
+                        <span className="text-sm font-semibold transition-colors">Profile</span>
+                      </Link>
+
+                      <button 
+                        onClick={() => { setMenuOpen(false); handleLogoutClick(); }} 
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-red-400 transition-all group w-full text-left"
+                      >
+                        <i className='bx bx-log-out text-[18px] text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors'></i>
+                        <span className="text-sm font-semibold transition-colors">Logout</span>
+                      </button>
                     </div>
-                  </div>
-
-                  {/* Menu Items */}
-                  <Link
-                    to={`/profile/${userInfo?.username}`}
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 hover:text-[#b8004e] dark:hover:text-[#d81b60] transition-all group"
-                  >
-                    <i className='bx bx-user text-[18px] text-gray-400 group-hover:text-[#b8004e] dark:group-hover:text-[#d81b60] transition-colors'></i>
-                    <span className="text-sm font-semibold transition-colors">Profile</span>
-                  </Link>
-
-                  <button 
-                    onClick={() => { setMenuOpen(false); handleLogoutClick(); }} 
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-red-400 transition-all group w-full text-left"
-                  >
-                    <i className='bx bx-log-out text-[18px] text-gray-400 group-hover:text-red-500 dark:group-hover:text-red-400 transition-colors'></i>
-                    <span className="text-sm font-semibold transition-colors">Logout</span>
-                  </button>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
+          )}
+        </div>
+      </header>
+
+      {/* Drawer Container */}
+      <div className={`fixed top-[61px] left-0 w-full sm:w-[280px] h-[calc(100vh-61px)] z-40 transition-all duration-300 ${drawerOpen ? 'visible opacity-100' : 'invisible opacity-0'}`}>
+        {/* Backdrop */}
+        <div 
+          onClick={() => setDrawerOpen(false)}
+          className="absolute inset-0 bg-black/40 sm:hidden backdrop-blur-sm transition-opacity duration-300"
+        />
+        {/* Drawer Panel */}
+        <div className={`absolute top-0 left-0 h-full w-[280px] bg-white dark:bg-[#18181b] p-6 flex flex-col gap-6 drawer-panel-transition border-r border-gray-150 dark:border-zinc-800/80 ${drawerOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+
+          {/* Drawer Links */}
+          <div className="flex flex-col gap-1">
+            <NavLink 
+              to="/" 
+              onClick={() => setDrawerOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 font-bold transition-all text-sm"
+            >
+              <i className='bx bx-home text-lg'></i>
+              <span>Home</span>
+            </NavLink>
+
+            <NavLink 
+              to="/blogs" 
+              onClick={() => setDrawerOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 font-bold transition-all text-sm"
+            >
+              <i className='bx bx-compass text-lg'></i>
+              <span>Explore</span>
+            </NavLink>
+
+            {isAuthenticated && (
+              <NavLink 
+                to="/my-blogs" 
+                onClick={() => setDrawerOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 font-bold transition-all text-sm"
+              >
+                <i className='bx bx-grid-alt text-lg'></i>
+                <span>Manage Blogs</span>
+              </NavLink>
+            )}
+
+            {isAuthenticated ? (
+              <>
+                <NavLink 
+                  to="/newpost" 
+                  onClick={() => setDrawerOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#b8004e]/10 dark:bg-pink-500/10 text-[#b8004e] dark:text-pink-400 font-bold transition-all text-sm my-2"
+                >
+                  <i className='bx bx-edit-alt text-lg'></i>
+                  <span>Write Post</span>
+                </NavLink>
+
+                <div className="h-px bg-gray-100 dark:bg-zinc-800/50 my-2"></div>
+
+                <Link
+                  to={`/profile/${userInfo?.username}`}
+                  onClick={() => setDrawerOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 font-bold transition-all text-sm"
+                >
+                  <i className='bx bx-user text-lg'></i>
+                  <span>My Profile</span>
+                </Link>
+
+                <button 
+                  onClick={() => { setDrawerOpen(false); handleLogoutClick(); }} 
+                  className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-red-400 font-bold transition-all text-sm text-left w-full"
+                >
+                  <i className='bx bx-log-out text-lg'></i>
+                  <span>Logout</span>
+                </button>
+              </>
+            ) : (
+              <NavLink 
+                to="/login" 
+                onClick={() => setDrawerOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 font-bold transition-all text-sm"
+              >
+                <i className='bx bx-log-in text-lg'></i>
+                <span>Login</span>
+              </NavLink>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       {/* Logout Confirmation Dialog */}
@@ -214,7 +352,7 @@ const Navbar = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </header>
+    </>
   )
 }
 
