@@ -1,17 +1,17 @@
 
 import './App.css';
+import { Routes, Route } from 'react-router-dom';
 import { StyledEngineProvider } from '@mui/material/styles';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Enter from './Pages/Enter';
-import { Routes, Route } from 'react-router-dom';
 import Home from './Pages/Home';
-import Dashboard from './Pages/Dashboard';
+import Explore from './Pages/Explore';
+import MyBlogs from './Pages/MyBlogs';
 import CreatePost from './Pages/CreatePost';
-import Navbar from './components/Navbar';
 import SingleBlog from './Pages/SingleBlog';
 import UserProfile from './Pages/UserProfile';
-import Footer from './components/Footer';
+import Navbar from './components/Navbar';
 
 function App() {
 
@@ -36,13 +36,13 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Enter />} />
-            <Route path="/blogs" element={<Dashboard />} />
+            <Route path="/blogs" element={<Explore />} />
+            <Route path="/my-blogs" element={<MyBlogs />} />
             <Route path="/newpost" element={<CreatePost />} />
             <Route path='/blogs/:slug' element={<SingleBlog />} />
             <Route path='/profile/:username' element={<UserProfile />} />
           </Routes>
         </main>
-        <Footer />
       </div>
     </StyledEngineProvider>
   );

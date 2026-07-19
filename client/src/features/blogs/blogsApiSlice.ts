@@ -115,7 +115,10 @@ export const blogsApiSlice = apiSlice.injectEndpoints({
 
         getSingleBlog: builder.query<SingleBlogResponse, string>({
             query: (slug) => `/blog/${slug}`,
-            providesTags: (result, error, slug) => [{ type: 'Blog', id: slug }],
+            providesTags: (result, error, slug) => [
+                { type: 'Blog', id: slug },
+                ...(result?.blog?._id ? [{ type: 'Blog' as const, id: result.blog._id }] : []),
+            ],
         }),
 
         createPost: builder.mutation<AuthCheckResponse, FormData>({
@@ -127,7 +130,7 @@ export const blogsApiSlice = apiSlice.injectEndpoints({
             invalidatesTags: [{ type: 'Blog', id: 'LIST' }],
         }),
 
-        editBlog: builder.mutation<string, EditBlogRequest>({
+        editBlog: builder.mutation<{ message: string; slug: string }, EditBlogRequest>({
             query: (updatedData) => ({
                 url: '/editblog',
                 method: 'POST',

@@ -2,6 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import defaultProfile from '../images/defaultProfile.jpg'
 import { useGetTrendingBlogsQuery } from '../features/blogs/blogsApiSlice'
+import { getProfileImage } from '../Utils'
 
 
 const FeaturedSection = ({ blogsData }) => {
@@ -13,7 +14,7 @@ const FeaturedSection = ({ blogsData }) => {
     const sidePosts = trendingBlogs?.slice(1, 5) || blogsData?.slice(1, 5);
 
     const heroDate = heroPost?.createdAt ? new Date(heroPost.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-    const heroProfileImage = heroPost?.author?.profileImage || defaultProfile;
+    const heroProfileImage = getProfileImage(heroPost?.author?.profileImage, defaultProfile);
 
     // Estimate read time
     const heroContent = heroPost?.content ? heroPost.content.replace(/<[^>]*>?/gm, '') : '';
@@ -69,7 +70,7 @@ const FeaturedSection = ({ blogsData }) => {
                             </p>
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <img src={heroProfileImage} alt={heroPost?.author?.name} className="w-8 h-8 rounded-full object-cover border-2 border-white/30" />
+                                    <img src={heroProfileImage} alt={heroPost?.author?.name} referrerPolicy="no-referrer" className="w-8 h-8 rounded-full object-cover border-2 border-white/30" />
                                     <div className="flex flex-col">
                                         <span className="text-sm font-semibold text-white">{heroPost?.author?.name}</span>
                                         <span className="text-xs text-white/60">{heroDate}</span>
@@ -100,7 +101,7 @@ const FeaturedSection = ({ blogsData }) => {
                     </h3>
                     {sidePosts?.map((blog, index) => {
                         const postDate = blog?.createdAt ? new Date(blog.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-                        const profileImg = blog?.author?.profileImage || defaultProfile;
+                        const profileImg = getProfileImage(blog?.author?.profileImage, defaultProfile);
                         return (
                             <Link key={blog?._id || index} to={`/blogs/${blog?.slug}`} className="group flex gap-4 items-start p-4 rounded-2xl hover:bg-gray-100 dark:hover:bg-white/5 transition-colors duration-200">
                                 <span className="text-3xl font-black opacity-10 leading-none select-none mt-1">
@@ -111,7 +112,7 @@ const FeaturedSection = ({ blogsData }) => {
                                         {blog?.title}
                                     </h3>
                                     <div className="flex items-center gap-2">
-                                        <img src={profileImg} alt={blog?.author?.name} className="w-4 h-4 rounded-full object-cover" />
+                                        <img src={profileImg} alt={blog?.author?.name} referrerPolicy="no-referrer" className="w-4 h-4 rounded-full object-cover" />
                                         <span className="text-xs font-medium opacity-60">{blog?.author?.name}</span>
                                         <span className="text-xs font-medium opacity-60">·</span>
                                         <span className="text-xs font-medium opacity-60">{postDate}</span>

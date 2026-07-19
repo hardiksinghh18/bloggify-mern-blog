@@ -29,7 +29,8 @@
     "react-scripts": "5.0.1",
     "react-toastify": "^10.0.5",
     "typescript": "^5.9.3",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zod": "^4.4.3"
   },
   "scripts": {
     "dev": "react-scripts start",

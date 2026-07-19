@@ -4,6 +4,7 @@ import { Tooltip } from '@mui/material'
 import defaultProfile from '../../images/defaultProfile.jpg'
 import { useGetCommentsQuery } from '../../features/comments/commentsApiSlice'
 import useShareBlog from '../../hooks/useShareBlog'
+import { getProfileImage } from '../../Utils'
 
 
 const BlogLayoutThree = ({ blog }) => {
@@ -14,7 +15,7 @@ const BlogLayoutThree = ({ blog }) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     const formattedDate = date.toLocaleDateString('en-US', options);
 
-    const profileImageUrl = blog?.author?.profileImage || defaultProfile;
+    const profileImageUrl = getProfileImage(blog?.author?.profileImage, defaultProfile);
 
     const { data: allComments = [] } = useGetCommentsQuery();
     const blogCommentsCount = allComments?.filter((item) => item.blogId === blog?._id)?.length || 0;
@@ -31,7 +32,7 @@ const BlogLayoutThree = ({ blog }) => {
             <div className="flex-1 flex flex-col justify-between w-full h-full min-w-0">
                 {/* Author Info */}
                 <div className="flex items-center gap-2 mb-3">
-                    <img src={profileImageUrl} alt="author" className="w-6 h-6 rounded-full object-cover" />
+                    <img src={profileImageUrl} alt="author" referrerPolicy="no-referrer" className="w-6 h-6 rounded-full object-cover" />
                     <Tooltip 
                         title={isLongName ? authorName : ""} 
                         arrow 

@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom'
 import defaultProfile from '../images/defaultProfile.jpg'
+import { getProfileImage } from '../Utils'
 import 'react-quill/dist/quill.snow.css';
 import { useSelector } from 'react-redux'
 import { selectUserInfo, selectIsAuthenticated } from '../features/auth/authSlice'
@@ -31,6 +32,8 @@ const SingleBlog = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const { slug } = useParams();
   const [editable, setEditable] = useState(false);
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const { data: blogData, isLoading } = useGetSingleBlogQuery(slug);
   const { data: allComments = [] } = useGetCommentsQuery();
@@ -54,6 +57,12 @@ const SingleBlog = () => {
     }
   }, [blog?._id, incrementViews]);
 
+  useEffect(() => {
+    if (searchParams.get('edit') === 'true' && blog?.author?._id === userInfo?._id) {
+      setEditable(true);
+    }
+  }, [searchParams, blog, userInfo]);
+
   const moreBlogs = blogData?.moreFromAuthor || [];
   const blogComments = allComments?.filter((item) => item.blogId === blog?._id) || [];
 
@@ -61,7 +70,7 @@ const SingleBlog = () => {
   if (isLoading || !blog) {
     return <BlogLoadingSkeleton />;
   }
-  const profileImageUrl = blog?.author?.profileImage || defaultProfile;
+  const profileImageUrl = getProfileImage(blog?.author?.profileImage, defaultProfile);
   const formattedDate = blog?.createdAt
     ? new Date(blog?.createdAt).toDateString()
     : '';
@@ -105,11 +114,18 @@ const SingleBlog = () => {
       {!editable ? (
         <div>
           <div className=' px-4 lg:px-64 py-4 lg:py-8 flex flex-col items-center justify-center w-full'>
+            <button 
+              onClick={() => navigate(-1)} 
+              className="flex items-center gap-1.5 text-xs sm:text-sm font-bold opacity-60 hover:opacity-100 hover:text-[#b8004e] transition-all mb-4 self-start mr-auto"
+            >
+              <i className='bx bx-arrow-back text-lg'></i>
+              <span>Back</span>
+            </button>
             <div className="w-full text-left"><h2 className=' lg:my-4 text-2xl md:text-3xl lg:text-4xl font-bold'>{blog?.title}</h2></div>
             <div className='flex flex-row flex-wrap gap-4 justify-between w-full items-center my-6'>
               <div className='flex justify-start gap-3 sm:gap-4 items-center overflow-hidden'>
                 <Link to={`/profile/${blog?.author?.username}`} className="shrink-0 flex items-center">
-                  <img className='h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover' src={profileImageUrl} alt="" />
+                  <img className='h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover' src={profileImageUrl} alt="" referrerPolicy="no-referrer" />
                 </Link>
                 <div className='min-w-0'>
                   <Tooltip 

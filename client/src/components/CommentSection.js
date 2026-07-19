@@ -4,11 +4,12 @@ import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { selectUserInfo } from '../features/auth/authSlice';
 import defaultProfile from '../images/defaultProfile.jpg'
+import SendIcon from '@mui/icons-material/Send';
+import { Tooltip } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { FaHeart, FaRegHeart } from "react-icons/fa";
-import { Tooltip } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
 import { useGetCommentsQuery, useAddCommentMutation, useDeleteCommentMutation, useToggleLikeCommentMutation } from '../features/comments/commentsApiSlice';
+import { getProfileImage } from '../Utils'
 
 
 const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
@@ -91,8 +92,9 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
             <form onSubmit={handleCommentSubmit} className="w-full mb-12 flex flex-col gap-4">
                 <div className="flex gap-4 items-start w-full">
                     <img 
-                        src={userInfo?.profileImage || defaultProfile} 
+                        src={getProfileImage(userInfo?.profileImage, defaultProfile)} 
                         alt="Your Profile" 
+                        referrerPolicy="no-referrer"
                         className="w-10 h-10 rounded-full object-cover shrink-0 shadow-sm"
                     />
                     <textarea
@@ -145,8 +147,9 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
                         <div key={index} className="rounded-md py-4 flex w-full border-b border-gray-100 dark:border-gray-800/50 mt-2 mb-2 pb-6 last:border-0">
                             <Link to={`/profile/${comment?.userId?.username}`} className='relative flex items-start justify-center pt-1 shrink-0 z-10'>
                                 <img
-                                    src={comment?.userId?.profileImage ? comment?.userId?.profileImage : defaultProfile}
+                                    src={getProfileImage(comment?.userId?.profileImage, defaultProfile)}
                                     alt="Profile"
+                                    referrerPolicy="no-referrer"
                                     className="h-10 w-10 mr-4 rounded-full object-cover shadow-sm bg-gray-50 dark:bg-[#1a1a1a]"
                                 />
                             </Link>
@@ -248,8 +251,9 @@ const CommentSection = ({ singleBlogId, blogAuthorId, blogAuthorImage }) => {
                                                             
                                                             <Link to={`/profile/${reply?.userId?.username}`} className='relative flex items-start justify-center shrink-0 z-10'>
                                                                 <img
-                                                                    src={reply?.userId?.profileImage ? reply?.userId?.profileImage : defaultProfile}
+                                                                    src={getProfileImage(reply?.userId?.profileImage, defaultProfile)}
                                                                     alt="Profile"
+                                                                    referrerPolicy="no-referrer"
                                                                     className="h-6 w-6 mr-3 rounded-full object-cover shadow-sm bg-gray-50 dark:bg-[#1a1a1a]"
                                                                 />
                                                             </Link>

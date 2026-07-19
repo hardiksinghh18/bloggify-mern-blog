@@ -352,7 +352,7 @@ app.post('/editblog', verifyuser, async (req, res) => {
 
     await blogToEdit.save()
 
-    return res.json({ message: "Blog has been updated" })
+    return res.json({ message: "Blog has been updated", slug: blogToEdit.slug })
 })
 
 app.post('/views', async (req, res) => {

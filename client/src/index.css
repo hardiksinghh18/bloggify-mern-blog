@@ -211,3 +211,98 @@ code {
 .Toastify__close-button:hover {
   opacity: 1;
 }
+
+/* Premium Navbar Active states & Dropdown Animation */
+header a.active {
+  color: #b8004e !important;
+}
+.dark header a.active {
+  color: #f472b6 !important;
+}
+header a.active::after {
+  width: 100% !important;
+  background-color: currentColor !important;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-dropdown-in {
+  animation: dropdownFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Push effect for side drawer */
+main, footer {
+  transition: margin-left 350ms cubic-bezier(0.16, 1, 0.3, 1), width 350ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.drawer-push-active {
+  margin-left: 280px;
+  width: calc(100% - 280px) !important;
+}
+
+.drawer-panel-transition {
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Premium Hamburger-to-Cross Menu toggle */
+.menu-toggle-btn {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.2s ease;
+}
+
+.menu-toggle-btn:hover {
+  background-color: rgba(156, 163, 175, 0.15);
+}
+.dark .menu-toggle-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.menu-toggle-btn span {
+  position: absolute;
+  left: 8px;
+  display: block;
+  width: 16px;
+  height: 2px;
+  background-color: currentColor;
+  border-radius: 9px;
+  transition: all 0.3s cubic-bezier(0.68, -0.6, 0.32, 1.6);
+  transform-origin: center;
+}
+
+.menu-toggle-btn span:nth-child(1) {
+  top: 10px;
+}
+.menu-toggle-btn span:nth-child(2) {
+  top: 15px;
+}
+.menu-toggle-btn span:nth-child(3) {
+  top: 20px;
+}
+
+.menu-toggle-btn.open span:nth-child(1) {
+  transform: translateY(5px) rotate(45deg);
+}
+
+.menu-toggle-btn.open span:nth-child(2) {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.menu-toggle-btn.open span:nth-child(3) {
+  transform: translateY(-5px) rotate(-45deg);
+}
