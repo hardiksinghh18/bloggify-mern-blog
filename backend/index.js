@@ -10,7 +10,9 @@ require('./mongo/connection')
 const Register = require('./models/usermodel')
 const Comment = require('./models/commentsmodel')
 const Blog = require('./models/blogs')
+const Notification = require('./models/notification')
 const verifyuser = require('./middleware/verifyuser')
+const verifyadmin = require('./middleware/verifyadmin')
 const bcrypt = require('bcryptjs')
 const { OAuth2Client } = require('google-auth-library');
 const app = express()
@@ -42,7 +44,7 @@ app.use(cors({
     // origin: ['http://localhost:3000'],
     origin: process.env.BASE_URL,
     // origin: ['https://bloggify-mern.vercel.app'],
-    methods: ["POST", "GET"],
+    methods: ["POST", "GET", "PUT", "DELETE", "OPTIONS"],
     credentials: true
 
 }))
@@ -384,6 +386,18 @@ app.post('/likeblog', verifyuser, async (req, res) => {
         } else {
             blog.likes.push(userId); // Like
             blog.dislikes.pull(userId); // Remove dislike if existed
+
+            // Create notification for the blog author if liked by someone else
+            if (blog.author.toString() !== userId.toString()) {
+                const likeNotification = new Notification({
+                    recipient: blog.author,
+                    title: "New Like",
+                    message: `${userDetails.name} (@${userDetails.username}) liked your blog post "${blog.title}".`,
+                    type: "like",
+                    link: `/blogs/${blog.slug}`
+                });
+                await likeNotification.save();
+            }
         }
 
         await blog.save();
@@ -451,13 +465,26 @@ app.post('/comment', verifyuser, async (req, res) => {
         const userDetails = await Register.findOne({ email: userEmail });
         let { name, _id } = userDetails;
         const { newComment, singleBlogId, parentCommentId } = await req.body
-        await Comment.create({
+        const commentObj = await Comment.create({
             username: name,
             userId: _id,
             commentDesc: newComment,
             blogId: singleBlogId,
             parentCommentId: parentCommentId || null
-        })
+        });
+
+        // Create notification for the blog author if commented by someone else
+        const blog = await Blog.findById(singleBlogId);
+        if (blog && blog.author.toString() !== _id.toString()) {
+            const commentNotification = new Notification({
+                recipient: blog.author,
+                title: "New Comment",
+                message: `${name} (@${userDetails.username}) commented on your blog post "${blog.title}": "${newComment.substring(0, 40)}${newComment.length > 40 ? '...' : ''}"`,
+                type: "comment",
+                link: `/blogs/${blog.slug}`
+            });
+            await commentNotification.save();
+        }
 
         return res.json({ status: 'comment added' })
     } catch (error) {
@@ -573,6 +600,17 @@ app.post('/follow', verifyuser, async (req, res) => {
             targetUser.followers.push(currentUser._id);
             await currentUser.save();
             await targetUser.save();
+
+            // Create notification for the followed user
+            const followNotification = new Notification({
+                recipient: targetUserId,
+                title: "New Follower",
+                message: `${currentUser.name} (@${currentUser.username}) started following you.`,
+                link: `/profile/${currentUser.username}`,
+                type: "follow"
+            });
+            await followNotification.save();
+
             return res.json({ message: 'Followed successfully', isFollowing: true });
         }
     } catch (error) {
@@ -587,6 +625,167 @@ app.post('/deleteblog', async (req, res) => {
 
     return res.json({ message: `Blog with id ${blogId} deleted` })
 })
+
+// ADMIN ROUTES
+app.get('/admin/stats', verifyuser, verifyadmin, async (req, res) => {
+    try {
+        const usersCount = await Register.countDocuments({});
+        const blogsCount = await Blog.countDocuments({});
+        const commentsCount = await Comment.countDocuments({});
+        return res.json({ usersCount, blogsCount, commentsCount });
+    } catch (error) {
+        console.error("Error in admin stats:", error);
+        res.status(500).json({ message: "Error fetching admin stats" });
+    }
+});
+
+app.get('/admin/users', verifyuser, verifyadmin, async (req, res) => {
+    try {
+        const users = await Register.find({}, '-password').sort({ _id: -1 });
+        return res.json({ users });
+    } catch (error) {
+        console.error("Error in admin users:", error);
+        res.status(500).json({ message: "Error fetching users" });
+    }
+});
+
+app.put('/admin/users/:id/role', verifyuser, verifyadmin, async (req, res) => {
+    try {
+        const { role } = req.body;
+        if (!['user', 'admin'].includes(role)) {
+            return res.status(400).json({ message: "Invalid role value" });
+        }
+        const updatedUser = await Register.findByIdAndUpdate(req.params.id, { role }, { new: true });
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        return res.json({ message: "User role updated successfully", user: updatedUser });
+    } catch (error) {
+        console.error("Error updating user role:", error);
+        res.status(500).json({ message: "Error updating user role" });
+    }
+});
+
+app.delete('/admin/users/:id', verifyuser, verifyadmin, async (req, res) => {
+    try {
+        const userToDelete = await Register.findById(req.params.id);
+        if (!userToDelete) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        // Also delete user's blogs and comments optionally or leave them. Let's delete user's blogs.
+        await Blog.deleteMany({ author: req.params.id });
+        await Comment.deleteMany({ userId: req.params.id });
+        await Register.findByIdAndDelete(req.params.id);
+        return res.json({ message: "User and associated content deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ message: "Error deleting user" });
+    }
+});
+
+app.get('/admin/blogs', verifyuser, verifyadmin, async (req, res) => {
+    try {
+        const blogs = await Blog.find({}).populate('author', 'name username email').sort({ createdAt: -1 });
+        return res.json({ blogs });
+    } catch (error) {
+        console.error("Error fetching admin blogs:", error);
+        res.status(500).json({ message: "Error fetching blogs" });
+    }
+});
+
+app.delete('/admin/blogs/:id', verifyuser, verifyadmin, async (req, res) => {
+    try {
+        const { reason } = req.body;
+        const blog = await Blog.findById(req.params.id);
+        if (!blog) {
+            return res.status(404).json({ message: "Blog not found" });
+        }
+
+        // Create notification for the author
+        const newNotification = new Notification({
+            recipient: blog.author,
+            title: "Blog Post Removed",
+            message: `Your blog post "${blog.title}" was removed by an administrator.`,
+            reason: reason || "Violation of community guidelines.",
+            type: "admin_action"
+        });
+        await newNotification.save();
+
+        // Delete the blog
+        await Blog.findByIdAndDelete(req.params.id);
+        // Also delete comments on this blog
+        await Comment.deleteMany({ blogId: req.params.id });
+        return res.json({ message: "Blog and associated comments deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting blog:", error);
+        res.status(500).json({ message: "Error deleting blog" });
+    }
+});
+
+app.get('/notifications', verifyuser, async (req, res) => {
+    try {
+        const user = await Register.findOne({ email: req.email });
+        if (!user) return res.status(404).json({ message: "User not found" });
+        const notifications = await Notification.find({ recipient: user._id }).sort({ createdAt: -1 });
+        return res.json({ notifications });
+    } catch (error) {
+        console.error("Error fetching notifications:", error);
+        res.status(500).json({ message: "Error fetching notifications" });
+    }
+});
+
+app.put('/notifications/read', verifyuser, async (req, res) => {
+    try {
+        const user = await Register.findOne({ email: req.email });
+        if (!user) return res.status(404).json({ message: "User not found" });
+        await Notification.updateMany({ recipient: user._id, isRead: false }, { isRead: true });
+        return res.json({ message: "Notifications marked as read" });
+    } catch (error) {
+        console.error("Error marking notifications as read:", error);
+        res.status(500).json({ message: "Error updating notifications" });
+    }
+});
+
+app.get('/admin/comments', verifyuser, verifyadmin, async (req, res) => {
+    try {
+        const comments = await Comment.find({})
+            .populate('userId', 'name username')
+            .sort({ createdAt: -1 });
+        return res.json({ comments });
+    } catch (error) {
+        console.error("Error fetching admin comments:", error);
+        res.status(500).json({ message: "Error fetching comments" });
+    }
+});
+
+app.delete('/admin/comments/:id', verifyuser, verifyadmin, async (req, res) => {
+    try {
+        const { reason } = req.body;
+        const comment = await Comment.findById(req.params.id);
+        if (!comment) {
+            return res.status(404).json({ message: "Comment not found" });
+        }
+
+        // Create notification for comment author
+        const newNotification = new Notification({
+            recipient: comment.userId,
+            title: "Comment Removed",
+            message: `Your comment "${comment.commentDesc.substring(0, 50)}..." was removed by an administrator.`,
+            reason: reason || "Violation of community guidelines.",
+            type: "admin_action"
+        });
+        await newNotification.save();
+
+        // Delete comment
+        await Comment.findByIdAndDelete(req.params.id);
+        return res.json({ message: "Comment deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting comment:", error);
+        res.status(500).json({ message: "Error deleting comment" });
+    }
+});
+
+
 
 app.post('/logout', verifyuser, async (req, res) => {
     try {

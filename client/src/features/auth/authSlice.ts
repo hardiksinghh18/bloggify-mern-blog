@@ -7,6 +7,7 @@ interface UserInfo {
     username?: string;
     bio?: string;
     profileImage?: string;
+    role?: string;
 }
 
 interface AuthState {

@@ -71,7 +71,12 @@ const userSchema = new mongoose.Schema({
     following: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Register'
-    }]
+    }],
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    }
 })
 
 userSchema.pre('validate', async function (next) {
