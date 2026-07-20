@@ -13,6 +13,7 @@ import { useThemeSwitch } from '../hooks/useThemeSwitch'
 import { toast } from 'react-toastify';
 import { MdLightMode } from "react-icons/md";
 import { MdDarkMode } from "react-icons/md";
+import NotificationBell from './NotificationBell'
 import { getProfileImage } from '../Utils'
 
 const Navbar = () => {
@@ -145,6 +146,8 @@ const Navbar = () => {
             {mode === "light" ? <MdDarkMode /> : <MdLightMode />}
           </button>
 
+          <NotificationBell />
+
           {/* Profile Dropdown */}
           {userInfo && (
             <div className="flex items-center relative" ref={menuRef}>
@@ -195,6 +198,17 @@ const Navbar = () => {
                         <span className="text-sm font-semibold transition-colors">Profile</span>
                       </Link>
 
+                      {userInfo?.role === 'admin' && (
+                        <Link
+                          to="/admin"
+                          onClick={() => setMenuOpen(false)}
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 hover:text-[#b8004e] dark:hover:text-[#d81b60] transition-all group"
+                        >
+                          <i className='bx bx-shield-quarter text-[18px] text-gray-400 group-hover:text-[#b8004e] dark:group-hover:text-[#d81b60] transition-colors'></i>
+                          <span className="text-sm font-semibold transition-colors">Admin Dashboard</span>
+                        </Link>
+                      )}
+
                       <button 
                         onClick={() => { setMenuOpen(false); handleLogoutClick(); }} 
                         className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-red-400 transition-all group w-full text-left"
@@ -243,6 +257,17 @@ const Navbar = () => {
 
             {isAuthenticated && (
               <NavLink 
+                to="/newpost" 
+                onClick={() => setDrawerOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#b8004e]/10 dark:bg-pink-500/10 text-[#b8004e] dark:text-pink-400 font-bold transition-all text-sm my-2"
+              >
+                <i className='bx bx-edit-alt text-lg'></i>
+                <span>Write Post</span>
+              </NavLink>
+            )}
+
+            {isAuthenticated && (
+              <NavLink 
                 to="/my-blogs" 
                 onClick={() => setDrawerOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 font-bold transition-all text-sm"
@@ -252,17 +277,19 @@ const Navbar = () => {
               </NavLink>
             )}
 
+            {isAuthenticated && userInfo?.role === 'admin' && (
+              <NavLink 
+                to="/admin" 
+                onClick={() => setDrawerOpen(false)}
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-zinc-800/40 text-gray-700 dark:text-zinc-300 font-bold transition-all text-sm"
+              >
+                <i className='bx bx-shield-quarter text-lg'></i>
+                <span>Admin Dashboard</span>
+              </NavLink>
+            )}
+
             {isAuthenticated ? (
               <>
-                <NavLink 
-                  to="/newpost" 
-                  onClick={() => setDrawerOpen(false)}
-                  className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#b8004e]/10 dark:bg-pink-500/10 text-[#b8004e] dark:text-pink-400 font-bold transition-all text-sm my-2"
-                >
-                  <i className='bx bx-edit-alt text-lg'></i>
-                  <span>Write Post</span>
-                </NavLink>
-
                 <div className="h-px bg-gray-100 dark:bg-zinc-800/50 my-2"></div>
 
                 <Link

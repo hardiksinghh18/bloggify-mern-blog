@@ -11,6 +11,8 @@ import MyBlogs from './Pages/MyBlogs';
 import CreatePost from './Pages/CreatePost';
 import SingleBlog from './Pages/SingleBlog';
 import UserProfile from './Pages/UserProfile';
+import AdminDashboard from './Pages/AdminDashboard';
+import AdminRoute from './components/AdminRoute';
 import Navbar from './components/Navbar';
 
 function App() {
@@ -41,6 +43,9 @@ function App() {
             <Route path="/newpost" element={<CreatePost />} />
             <Route path='/blogs/:slug' element={<SingleBlog />} />
             <Route path='/profile/:username' element={<UserProfile />} />
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
           </Routes>
         </main>
       </div>
